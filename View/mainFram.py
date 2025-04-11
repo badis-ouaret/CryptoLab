@@ -23,7 +23,11 @@ RIGHT_PANEL_HEIGHT = FRAME_HEIGHT
 RIGHT_PANEL_BG_COLOR = "white"
 RIGHT_PANEL_FONT = ("Arial", 20)
 RIGHT_PANEL_TEXT_COLOR = "black"
+RIGHT_PANEL_TITLE_FONT = ("Arial", 40)
+RIGHT_PANEL_TITLE_COLOR = "black"
+
 OPTION_PANEL_HEIGHT = 70
+
 PADY_RADIO_OPTION_PANEL = 20
 OPTION_PANEL_BG_COLOR = "gray"
 OPTION_PANEL_FONT = ("Arial", 16)
@@ -161,7 +165,7 @@ class Interface(ctk.CTk):
 
     def createPanel(self):
         panel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="white")
-        panel.pack(side="top",fill="both",expand=True)
+        panel.pack(side="bottom",fill="both",expand=True)
         return panel
     def only_numbers(self,char):
         return char.isdigit()
@@ -170,33 +174,56 @@ class Interface(ctk.CTk):
         return char.isalpha() and char.isascii()
     
 
+    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
+
+        for line,weight in dictR.items():
+            pannel.grid_rowconfigure(line, weight=weight)
+        for col,weight in dictC.items():
+            pannel.grid_columnconfigure(col, weight=weight)
+        
+    def createKeyEntry(self,pannel,ligne = 1,colonne = 2,validate = "key",vcmd = None,labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR):
+        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=labelFont, text_color=labelTextColor)
+        cleLabel.grid(row=ligne, column=colonne-1, pady=30, padx=(0, 10), sticky="e")
+
+        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=entryFont, text_color=entryTextColor ,validate = validate ,validatecommand=vcmd)
+        cleEntry.grid(row=ligne, column=colonne, pady=30 ,padx=0, sticky="nesw")
+    
+    def createTextsEntrys(self,pannel,ligne = 3,colonne = 0,textLabel = "Texte en clair",resultLabel = "Texte chiffré",entryWidth = 300,entryHeight = 200,entryBorderColor = "black",entryBorderWidth=3, entryFgColor = "white" ,entryTextColor = RIGHT_PANEL_TEXT_COLOR,entryFont = RIGHT_PANEL_FONT,label1Text = "Texte en clair",label2Text = "Texte chiffré",label1Font = RIGHT_PANEL_FONT,label2Font = RIGHT_PANEL_FONT,label1TextColor= RIGHT_PANEL_TEXT_COLOR,label2TextColor = RIGHT_PANEL_TEXT_COLOR):
+        textLabel = ctk.CTkLabel(pannel,text=label1Text,font=label1Font, text_color=label1TextColor)
+        textLabel.grid(row=ligne-1, column=colonne+1, pady=0, padx=(10,0), sticky="nesw")
+
+        resultLabel = ctk.CTkLabel(pannel,text=label2Text,font=label2Font, text_color=label2TextColor)
+        resultLabel.grid(row=ligne-1, column=colonne+3, pady=0, padx=(0, 10), sticky="nesw")
+        
+        textEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
+        textEntry.grid(row=ligne, column=colonne, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
+        textEntry.focus_set()
+
+        resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
+        resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
+        resultEntry.configure(state="disabled")
+        
+        
+    
+
     
    
-    def createClassicCypherPannel(self,pannel,validate = "key",vcmd = None):       
-        pannel.grid_columnconfigure(0, weight=1)
-        pannel.grid_columnconfigure(1, weight=0)
-        pannel.grid_columnconfigure(2, weight=0)
-        pannel.grid_columnconfigure(3, weight=1)
-       
+    def createClassicCypherPannel(self,pannel,validate = "key",vcmd = None,title = "Chiffrement classique",labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR): 
+        titleFrame = ctk.CTkFrame(pannel.master,fg_color=pannel.cget("fg_color") ,corner_radius=0,height=100)
+        titleFrame.pack(side="top",fill="x")
+        titre = ctk.CTkLabel(titleFrame, text=title, font=RIGHT_PANEL_TITLE_FONT, text_color=RIGHT_PANEL_TITLE_COLOR)
+        titre.pack(expand = True,anchor = 'center' ,pady=30)        
         
+        self.configureGrid(pannel,dictC={0: 0, 1: 1, 2: 1, 3: 1})
+        self.createKeyEntry(pannel,ligne = 1,colonne = 2,validate = validate,vcmd = vcmd)       
 
-        # Label et champ côte à côte dans les colonnes 1 et 2
-        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
-        cleLabel.grid(row=1, column=1, pady=30, padx=(0, 10), sticky="e")
 
+        textLabel = ctk.CTkLabel(pannel,text= "texte en clair",font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        textLabel.grid(row=2, column=1, pady=0, padx=(10,0), sticky="nesw")
+
+        resultLabel = ctk.CTkLabel(pannel,text= "texte en clair",font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        resultLabel.grid(row=2, column=3, pady=0, padx=(0, 10), sticky="nesw")
         
-
-        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=KEY_ENTRY_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = validate ,validatecommand=vcmd)
-        cleEntry.grid(row=1, column=2, pady=30 ,padx=0, sticky="w")
-
-        textLabel = ctk.CTkLabel(pannel, text="Texte en clair", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
-        textLabel.grid(row=2, column=0, pady=30, padx=(30, 0), sticky="nesw")
-
-        resultLabel = ctk.CTkLabel(pannel, text="Texte chiffré", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
-        resultLabel.grid(row=2, column=3, pady=30, padx=(10, 30), sticky="nesw")
-
-        
-
         textEntry = ctk.CTkTextbox(pannel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
         textEntry.grid(row=3, column=0, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
         textEntry.focus_set()
@@ -213,11 +240,11 @@ class Interface(ctk.CTk):
 
     def createCesarPanel(self):
         cesarPanel = self.createPanel()
-        self.createClassicCypherPannel(cesarPanel,validate = "key",vcmd =(cesarPanel.register(self.only_numbers), "%S") )
+        self.createClassicCypherPannel(cesarPanel,title="Chiffrement de César",validate = "key",vcmd =(cesarPanel.register(self.only_numbers), "%S") )
     
     def createVigenerePanel(self):
         cesarPanel = self.createPanel()
-        self.createClassicCypherPannel(cesarPanel,validate = "key",vcmd =(cesarPanel.register(self.only_alphabetic), "%S") )
+        self.createClassicCypherPannel(cesarPanel,title="Chiffrement de Vigenère",validate = "key",vcmd =(cesarPanel.register(self.only_alphabetic), "%S") )
     
         
     def createPlayfairPanel(self):
