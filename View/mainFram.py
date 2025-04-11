@@ -163,51 +163,63 @@ class Interface(ctk.CTk):
         panel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="white")
         panel.pack(side="top",fill="both",expand=True)
         return panel
+    def only_numbers(self,char):
+        return char.isdigit()
+    
+    def only_alphabetic(self,char):
+        return char.isalpha() and char.isascii()
     
 
-
-    def createCesarPanel(self):
-        
-        cesarPanel = self.createPanel()
-        cesarPanel.grid_columnconfigure(0, weight=1)
-        cesarPanel.grid_columnconfigure(1, weight=0)
-        cesarPanel.grid_columnconfigure(2, weight=0)
-        cesarPanel.grid_columnconfigure(3, weight=1)
+    
+   
+    def createClassicCypherPannel(self,pannel,validate = "key",vcmd = None):       
+        pannel.grid_columnconfigure(0, weight=1)
+        pannel.grid_columnconfigure(1, weight=0)
+        pannel.grid_columnconfigure(2, weight=0)
+        pannel.grid_columnconfigure(3, weight=1)
+       
         
 
         # Label et champ côte à côte dans les colonnes 1 et 2
-        cleLabel = ctk.CTkLabel(cesarPanel, text="Clé", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
         cleLabel.grid(row=1, column=1, pady=30, padx=(0, 10), sticky="e")
 
-        cleEntry = ctk.CTkEntry(cesarPanel, width=300,height=35,font=KEY_ENTRY_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        
+
+        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=KEY_ENTRY_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = validate ,validatecommand=vcmd)
         cleEntry.grid(row=1, column=2, pady=30 ,padx=0, sticky="w")
 
-        textLabel = ctk.CTkLabel(cesarPanel, text="Texte en clair", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        textLabel = ctk.CTkLabel(pannel, text="Texte en clair", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
         textLabel.grid(row=2, column=0, pady=30, padx=(30, 0), sticky="nesw")
 
-        resultLabel = ctk.CTkLabel(cesarPanel, text="Texte chiffré", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        resultLabel = ctk.CTkLabel(pannel, text="Texte chiffré", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
         resultLabel.grid(row=2, column=3, pady=30, padx=(10, 30), sticky="nesw")
 
         
 
-        textEntry = ctk.CTkTextbox(cesarPanel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
+        textEntry = ctk.CTkTextbox(pannel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
         textEntry.grid(row=3, column=0, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
         textEntry.focus_set()
 
-        resultEntry = ctk.CTkTextbox(cesarPanel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
+        resultEntry = ctk.CTkTextbox(pannel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
         resultEntry.grid(row=3, column=3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
         resultEntry.configure(state="disabled")
 
-        operationButton = self.createButton(cesarPanel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
-        clearButton = self.createButton(cesarPanel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",command=lambda: self.clearButtonAction(textEntry,resultEntry,cleEntry),ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
+        operationButton = self.createButton(pannel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
+        clearButton = self.createButton(pannel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",command=lambda: self.clearButtonAction(textEntry,resultEntry,cleEntry),ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
         
         self.traceOperationId = self.choixOperation.trace_add("write", lambda *args: self.update_panel_for_operation(textLabel,resultLabel,operationButton))
         
 
-
+    def createCesarPanel(self):
+        cesarPanel = self.createPanel()
+        self.createClassicCypherPannel(cesarPanel,validate = "key",vcmd =(cesarPanel.register(self.only_numbers), "%S") )
+    
     def createVigenerePanel(self):
-        vigenerePanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="blue")
-        vigenerePanel.pack(side="top",fill="both",expand=True)
+        cesarPanel = self.createPanel()
+        self.createClassicCypherPannel(cesarPanel,validate = "key",vcmd =(cesarPanel.register(self.only_alphabetic), "%S") )
+    
+        
     def createPlayfairPanel(self):
         playfairPanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="green")
         playfairPanel.pack(side="top",fill="both",expand=True)
@@ -249,6 +261,10 @@ class Interface(ctk.CTk):
         button.configure(fg_color=fg_color, text_color=text_color)
     
     #=======================================================================
+
+    #Methodes pannel des entrées et des boutons ==================================================
+
+    
 if __name__ == "__main__":
     app = Interface()
     app.mainloop()
