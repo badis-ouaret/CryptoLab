@@ -187,6 +187,7 @@ class Interface(ctk.CTk):
 
         cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=entryFont, text_color=entryTextColor ,validate = validate ,validatecommand=vcmd)
         cleEntry.grid(row=ligne, column=colonne, pady=30 ,padx=0, sticky="nesw")
+        return cleEntry
     
     def createTextsEntrys(self,pannel,ligne = 3,colonne = 0,textLabel = "Texte en clair",resultLabel = "Texte chiffré",entryWidth = 300,entryHeight = 200,entryBorderColor = "black",entryBorderWidth=3, entryFgColor = "white" ,entryTextColor = RIGHT_PANEL_TEXT_COLOR,entryFont = RIGHT_PANEL_FONT,label1Text = "Texte en clair",label2Text = "Texte chiffré",label1Font = RIGHT_PANEL_FONT,label2Font = RIGHT_PANEL_FONT,label1TextColor= RIGHT_PANEL_TEXT_COLOR,label2TextColor = RIGHT_PANEL_TEXT_COLOR):
         textLabel = ctk.CTkLabel(pannel,text=label1Text,font=label1Font, text_color=label1TextColor)
@@ -202,6 +203,26 @@ class Interface(ctk.CTk):
         resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
         resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
         resultEntry.configure(state="disabled")
+
+        return textLabel,resultLabel,textEntry,resultEntry
+    
+    def mainPart(self,pannel,title = "",titleFont = RIGHT_PANEL_TITLE_FONT,titleTextColor = RIGHT_PANEL_TITLE_COLOR,isGrid = True,dictC ={0: 0, 1: 1, 2: 1, 3: 1},dictR={}):
+        titleFrame = ctk.CTkFrame(pannel.master,fg_color=pannel.cget("fg_color") ,corner_radius=0,height=100)
+        titleFrame.pack(side="top",fill="x")
+        titre = ctk.CTkLabel(titleFrame, text=title, font=titleFont, text_color=titleTextColor)
+        titre.pack(expand = True,anchor = 'center' ,pady=30) 
+        if isGrid:
+            self.configureGrid(pannel,dictC=dictC,dictR=dictR)
+
+        textLabel,resultLabel,textEntry,resultEntry = self.createTextsEntrys(pannel)    
+
+        operationButton = self.createButton(pannel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
+        clearButton = self.createButton(pannel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
+        
+        self.traceOperationId = self.choixOperation.trace_add("write", lambda *args: self.update_panel_for_operation(textLabel,resultLabel,operationButton))
+        return operationButton,clearButton,textEntry,resultEntry
+
+        
         
         
     
@@ -209,33 +230,18 @@ class Interface(ctk.CTk):
     
    
     def createClassicCypherPannel(self,pannel,validate = "key",vcmd = None,title = "Chiffrement classique",labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR): 
-        titleFrame = ctk.CTkFrame(pannel.master,fg_color=pannel.cget("fg_color") ,corner_radius=0,height=100)
-        titleFrame.pack(side="top",fill="x")
-        titre = ctk.CTkLabel(titleFrame, text=title, font=RIGHT_PANEL_TITLE_FONT, text_color=RIGHT_PANEL_TITLE_COLOR)
-        titre.pack(expand = True,anchor = 'center' ,pady=30)        
+        operationButton,clearButton,textEntry,resultEntry = self.mainPart(pannel,title = title)
+        cleEntry = self.createKeyEntry(pannel,ligne = 1,colonne = 2,validate = validate,vcmd = vcmd)
+        operationButton.configure(command=lambda: None)
+        clearButton.configure(command=lambda event: self.clearButtonAction(textEntry,resultEntry,cleEntry))      
         
-        self.configureGrid(pannel,dictC={0: 0, 1: 1, 2: 1, 3: 1})
-        self.createKeyEntry(pannel,ligne = 1,colonne = 2,validate = validate,vcmd = vcmd)       
-
-
-        textLabel = ctk.CTkLabel(pannel,text= "texte en clair",font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
-        textLabel.grid(row=2, column=1, pady=0, padx=(10,0), sticky="nesw")
-
-        resultLabel = ctk.CTkLabel(pannel,text= "texte en clair",font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
-        resultLabel.grid(row=2, column=3, pady=0, padx=(0, 10), sticky="nesw")
         
-        textEntry = ctk.CTkTextbox(pannel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
-        textEntry.grid(row=3, column=0, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
-        textEntry.focus_set()
+               
+         
 
-        resultEntry = ctk.CTkTextbox(pannel, width=300,height=200,font=RIGHT_PANEL_FONT, text_color="black",wrap="word",activate_scrollbars=True,fg_color="white",border_width=3,border_color="black")
-        resultEntry.grid(row=3, column=3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
-        resultEntry.configure(state="disabled")
-
-        operationButton = self.createButton(pannel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
-        clearButton = self.createButton(pannel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",command=lambda: self.clearButtonAction(textEntry,resultEntry,cleEntry),ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
+       
+    
         
-        self.traceOperationId = self.choixOperation.trace_add("write", lambda *args: self.update_panel_for_operation(textLabel,resultLabel,operationButton))
         
 
     def createCesarPanel(self):
@@ -246,13 +252,19 @@ class Interface(ctk.CTk):
         cesarPanel = self.createPanel()
         self.createClassicCypherPannel(cesarPanel,title="Chiffrement de Vigenère",validate = "key",vcmd =(cesarPanel.register(self.only_alphabetic), "%S") )
     
+    def createAmelioCesarPanel(self):
+        amelioCesarPanel = self.createPanel()
+        operationButton,clearButton,textEntry,resultEntry = self.mainPart(amelioCesarPanel,title="Chiffrement de César amélioré")        
+        operationButton.configure(command=lambda: None)
+        clearButton.configure(command=lambda event: self.clearButtonAction2(textEntry,resultEntry))        
+        keyDefButton = self.createButton(amelioCesarPanel, text="Définir la clé",ligne=1,colonne=2,pady=(0,20))
+         
+
         
     def createPlayfairPanel(self):
         playfairPanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="green")
         playfairPanel.pack(side="top",fill="both",expand=True)
-    def createAmelioCesarPanel(self):
-        amelioCesarPanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="yellow")
-        amelioCesarPanel.pack(side="top",fill="both",expand=True)
+    
     def createPolybePanel(self):
         polybePanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="purple")
         polybePanel.pack(side="top",fill="both",expand=True)
@@ -271,6 +283,11 @@ class Interface(ctk.CTk):
         textEntry.delete("0.0", "end")
         resultEntry.delete("0.0", "end")
         cleEntry.delete(0, "end")
+        textEntry.focus_set()
+    
+    def clearButtonAction2(self,textEntry,resultEntry):
+        textEntry.delete("0.0", "end")
+        resultEntry.delete("0.0", "end")
         textEntry.focus_set()
 
     #Methodes gestion boutons ====================================================================
