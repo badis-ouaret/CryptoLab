@@ -116,62 +116,61 @@ class Interface(ctk.CTk):
         self.radioChiffrer.pack(side="left", padx=10, pady=PADY_RADIO_OPTION_PANEL)
         self.radioDechiffrer.pack(side="left", padx=10, pady=PADY_RADIO_OPTION_PANEL)
             #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            # Panel principal
+            # Panel principal++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         self.panelPrincipal = ctk.CTkFrame(self.right_panel)
         self.panelPrincipal.pack(side="bottom", fill="both", expand=True)
+        self.operationButton,self.clearButton,self.textEntry,self.resultEntry,self.textLabel,self.resultLabel,self.title = self.mainPart(self.panelPrincipal,title="Chiffrement")        
+        self.clearButton.configure(command=self.clearButtonAction2)        
+        self.keyDefButton = self.createButton(self.panelPrincipal, text="Définir la clé",ligne=1,colonne=2,pady=(0,20))
+        
         self.update_panel_for_method()
         self.choixMethode.trace_add("write",self.update_panel_for_method)
+        #self.update_panel_for_operation()
+        self.traceOperationId = self.choixOperation.trace_add("write",self.update_panel_for_operation)
             #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    def update_panel_for_method(self, *args):
-        
-        # Effacer le contenu précédent du panel principal
-        for widget in self.panelPrincipal.winfo_children():
-            widget.destroy()
-        if hasattr(self, "traceOperationId"):  # Vérifie qu'on a bien un trace enregistré
-            self.choixOperation.trace_remove("write", self.traceOperationId)
-            del self.traceOperationId
 
-
-
-        self.choixOperation.set("Chiffrer")  # Réinitialiser le choix d'opération à "Chiffrer"
-
-        # Créer un nouveau panneau selon la méthode choisie
+    #Gestion de l'affichage selon les boutons radios selectionnés
+    def update_panel_for_method(self, *args):         
         method = self.choixMethode.get()
 
         if method == "Cesar":
-            self.createCesarPanel()
+            self.title.configure(text = "Chiffrement de César")
         elif method == "Vigenere":
-            self.createVigenerePanel()
+            self.title.configure(text = "Chiffrement de Vigenère")
         elif method == "Playfair":
-            self.createPlayfairPanel()
+            self.title.configure(text = "Chiffrement de Playfair")
         elif method == "AmelioCesar":
-            self.createAmelioCesarPanel()
+            self.title.configure(text = "Chiffrement de César Amélioré")
         elif method == "Polybe":
-            self.createPolybePanel()
+            self.title.configure(text = "Chiffrement de Polybe")
         elif method == "Hill":
-            self.createHillPanel()
+            self.title.configure(text = "Chiffrement de Hill")
         elif method == "Affine":
-            self.createAffinePanel()
+            self.title.configure(text = "Chiffrement Affine")
         elif method == "Transpo":
-            self.createTranspoPanel()
+            self.title.configure(text = "Chiffrement par Transposition")
 
-    def update_panel_for_operation(self,label1,label2,buttonLabel,*args):
-        label1.configure(text="Texte en clair" if self.choixOperation.get() == "Chiffrer" else "Texte chiffré")
-        label2.configure(text="Texte chiffré" if self.choixOperation.get() == "Chiffrer" else "Texte en clair")
-        buttonLabel.configure(text="Chiffrer" if self.choixOperation.get() == "Chiffrer" else "Déchiffrer")
+    def update_panel_for_operation(self,*args):
+        self.textLabel.configure(text="Texte en clair" if self.choixOperation.get() == "Chiffrer" else "Texte chiffré")
+        self.resultLabel.configure(text="Texte chiffré" if self.choixOperation.get() == "Chiffrer" else "Texte en clair")
+        self.operationButton.configure(text="Chiffrer" if self.choixOperation.get() == "Chiffrer" else "Déchiffrer")
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
+
+
+
+
+
+    
+
+    #Methodes de creation de panel et de configuration de la grille ============================
     def createPanel(self):
         panel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="white")
         panel.pack(side="bottom",fill="both",expand=True)
         return panel
-    def only_numbers(self,char):
-        return char.isdigit()
-    
-    def only_alphabetic(self,char):
-        return char.isalpha() and char.isascii()
     
 
     def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
@@ -219,77 +218,10 @@ class Interface(ctk.CTk):
         operationButton = self.createButton(pannel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
         clearButton = self.createButton(pannel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
         
-        self.traceOperationId = self.choixOperation.trace_add("write", lambda *args: self.update_panel_for_operation(textLabel,resultLabel,operationButton))
-        return operationButton,clearButton,textEntry,resultEntry
-
         
-        
-        
+        return operationButton,clearButton,textEntry,resultEntry,textLabel,resultLabel,titre
+    #=====================================================================
     
-
-    
-   
-    def createClassicCypherPannel(self,pannel,validate = "key",vcmd = None,title = "Chiffrement classique",labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR): 
-        operationButton,clearButton,textEntry,resultEntry = self.mainPart(pannel,title = title)
-        cleEntry = self.createKeyEntry(pannel,ligne = 1,colonne = 2,validate = validate,vcmd = vcmd)
-        operationButton.configure(command=lambda: None)
-        clearButton.configure(command=lambda event: self.clearButtonAction(textEntry,resultEntry,cleEntry))      
-        
-        
-               
-         
-
-       
-    
-        
-        
-
-    def createCesarPanel(self):
-        cesarPanel = self.createPanel()
-        self.createClassicCypherPannel(cesarPanel,title="Chiffrement de César",validate = "key",vcmd =(cesarPanel.register(self.only_numbers), "%S") )
-    
-    def createVigenerePanel(self):
-        cesarPanel = self.createPanel()
-        self.createClassicCypherPannel(cesarPanel,title="Chiffrement de Vigenère",validate = "key",vcmd =(cesarPanel.register(self.only_alphabetic), "%S") )
-    
-    def createAmelioCesarPanel(self):
-        amelioCesarPanel = self.createPanel()
-        operationButton,clearButton,textEntry,resultEntry = self.mainPart(amelioCesarPanel,title="Chiffrement de César amélioré")        
-        operationButton.configure(command=lambda: None)
-        clearButton.configure(command=lambda event: self.clearButtonAction2(textEntry,resultEntry))        
-        keyDefButton = self.createButton(amelioCesarPanel, text="Définir la clé",ligne=1,colonne=2,pady=(0,20))
-         
-
-        
-    def createPlayfairPanel(self):
-        playfairPanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="green")
-        playfairPanel.pack(side="top",fill="both",expand=True)
-    
-    def createPolybePanel(self):
-        polybePanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="purple")
-        polybePanel.pack(side="top",fill="both",expand=True)
-    def createHillPanel(self):
-        hillPanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="orange")
-        hillPanel.pack(side="top",fill="both",expand=True)
-    def createAffinePanel(self):
-        affinePanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="red")
-        affinePanel.pack(side="top",fill="both",expand=True)
-    def createTranspoPanel(self):
-        transpoPanel = ctk.CTkFrame(self.panelPrincipal,corner_radius=0, fg_color="gray")
-        transpoPanel.pack(side="top",fill="both",expand=True)
-
-    
-    def clearButtonAction(self,textEntry,resultEntry,cleEntry):
-        textEntry.delete("0.0", "end")
-        resultEntry.delete("0.0", "end")
-        cleEntry.delete(0, "end")
-        textEntry.focus_set()
-    
-    def clearButtonAction2(self,textEntry,resultEntry):
-        textEntry.delete("0.0", "end")
-        resultEntry.delete("0.0", "end")
-        textEntry.focus_set()
-
     #Methodes gestion boutons ====================================================================
     def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
         button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
@@ -303,10 +235,26 @@ class Interface(ctk.CTk):
         button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
     def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
         button.configure(fg_color=fg_color, text_color=text_color)
+    def clearButtonAction(self,textEntry,resultEntry,cleEntry):
+        textEntry.delete("0.0", "end")
+        resultEntry.delete("0.0", "end")
+        cleEntry.delete(0, "end")
+        textEntry.focus_set()
     
+    def clearButtonAction2(self):
+        self.textEntry.delete("0.0", "end")
+        self.resultEntry.delete("0.0", "end")
+        self.textEntry.focus_set()
     #=======================================================================
 
     #Methodes pannel des entrées et des boutons ==================================================
+
+    def only_numbers(self,char):
+        return char.isdigit()
+    
+    def only_alphabetic(self,char):
+        return char.isalpha() and char.isascii()
+    
 
     
 if __name__ == "__main__":
