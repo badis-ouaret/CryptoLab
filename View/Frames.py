@@ -117,7 +117,7 @@ class Interface(ctk.CTk):
         self.radioDechiffrer.pack(side="left", padx=10, pady=PADY_RADIO_OPTION_PANEL)
             #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             # Panel principal++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        self.panelPrincipal = ctk.CTkFrame(self.right_panel)
+        self.panelPrincipal = ctk.CTkFrame(self.right_panel,fg_color=RIGHT_PANEL_BG_COLOR,corner_radius=0)
         self.panelPrincipal.pack(side="bottom", fill="both", expand=True)
         self.operationButton,self.clearButton,self.textEntry,self.resultEntry,self.textLabel,self.resultLabel,self.title = self.mainPart(self.panelPrincipal,title="Chiffrement")        
         self.clearButton.configure(command=self.clearButtonAction2)        
@@ -180,13 +180,7 @@ class Interface(ctk.CTk):
         for col,weight in dictC.items():
             pannel.grid_columnconfigure(col, weight=weight)
         
-    def createKeyEntry(self,pannel,ligne = 1,colonne = 2,validate = "key",vcmd = None,labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR):
-        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=labelFont, text_color=labelTextColor)
-        cleLabel.grid(row=ligne, column=colonne-1, pady=30, padx=(0, 10), sticky="e")
-
-        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=entryFont, text_color=entryTextColor ,validate = validate ,validatecommand=vcmd)
-        cleEntry.grid(row=ligne, column=colonne, pady=30 ,padx=0, sticky="nesw")
-        return cleEntry
+    
     
     def createTextsEntrys(self,pannel,ligne = 3,colonne = 0,textLabel = "Texte en clair",resultLabel = "Texte chiffré",entryWidth = 300,entryHeight = 200,entryBorderColor = "black",entryBorderWidth=3, entryFgColor = "white" ,entryTextColor = RIGHT_PANEL_TEXT_COLOR,entryFont = RIGHT_PANEL_FONT,label1Text = "Texte en clair",label2Text = "Texte chiffré",label1Font = RIGHT_PANEL_FONT,label2Font = RIGHT_PANEL_FONT,label1TextColor= RIGHT_PANEL_TEXT_COLOR,label2TextColor = RIGHT_PANEL_TEXT_COLOR):
         textLabel = ctk.CTkLabel(pannel,text=label1Text,font=label1Font, text_color=label1TextColor)
@@ -254,9 +248,123 @@ class Interface(ctk.CTk):
     
     def only_alphabetic(self,char):
         return char.isalpha() and char.isascii()
+
+
+class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair
+    def __init__(self):
+        super().__init__()
+        self.geometry("400x100")
+        self.resizable(False, False)        
+        self.main_frame = ctk.CTkFrame(self, fg_color=RIGHT_PANEL_BG_COLOR)
+        self.main_frame.pack(fill="both", expand=True)
+        self.configureGrid(self.main_frame)
+        keyEntry = self.createKeyEntry(self.main_frame)
+    
+    def createKeyEntry(self,pannel,ligne = 1,colonne = 2,validate = "key",vcmd = None,labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR):
+        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=labelFont, text_color=labelTextColor)
+        cleLabel.grid(row=ligne, column=colonne-1, pady=30, padx=(0, 10), sticky="e")
+
+        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=entryFont, text_color=entryTextColor ,validate = validate ,validatecommand=vcmd)
+        cleEntry.grid(row=ligne, column=colonne, pady=30 ,padx=0, sticky="nesw")
+        return cleEntry
+    
+    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
+
+        for line,weight in dictR.items():
+            pannel.grid_rowconfigure(line, weight=weight)
+        for col,weight in dictC.items():
+            pannel.grid_columnconfigure(col, weight=weight)
+
+
+
+
+class defineAmelioCesarKeyFrame(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("800x600")
+        self.resizable(False, False)
+        self.main_frame = ctk.CTkFrame(self,corner_radius=0,fg_color=RIGHT_PANEL_BG_COLOR)
+        self.main_frame.pack(fill="both", expand=True)
+        self.configureGrid(self.main_frame,lineWay=True,nbrLine=6,nbrCol=10,lineVal=1,colVal=1)
+        self.LETTRE_DE_ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+ 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        self.lettresRestantes = self.LETTRE_DE_ALPHABET 
+        vcmd = (self.register(self.gestionDesLettres),'%P','%s') 
+        self.entryDict = {}    
+        line = 0
+        col = 0
+        for c in range(ord('A'),ord('Z')+1):
+            self.letter = ctk.CTkLabel(self.main_frame, text=chr(c)+" :", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+            self.letter.grid(row=line, column=col, pady=10, padx=(20, 0), sticky="w")
+
+            self.Entry = ctk.CTkEntry(self.main_frame,width=35,height=35,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key" ,validatecommand=vcmd)
+            self.Entry.grid(row=line, column=col+1, pady=10 ,padx=(0,0), sticky="w")
+
+            self.entryDict[c] = self.Entry
+
+            col += 2
+            if col == 10 :
+                line = line +1
+                col = 0
+    
+        self.buttonFrame = ctk.CTkFrame(self,fg_color=RIGHT_PANEL_BG_COLOR,corner_radius=0)
+        self.buttonFrame.pack(side="bottom",fill="x")
+        self.configureGrid(self.buttonFrame,lineWay=True,nbrLine=2,nbrCol=3,lineVal=1,colVal=1)
+        self.submitButton = self.createButton(self.buttonFrame, text="Valider",ligne=0,colonne=1,pady =10)
+        self.clearButton = self.createButton(self.buttonFrame, text="Effacer",command=self.clearButtonAction,ligne= 1,colonne=1,pady=10)
+
+    def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
+        button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
+        button.grid(row=ligne, column=colonne, pady=pady, padx=padx, sticky="nesw")
+        button.bind("<Enter>", lambda event: self.buttonOnEnter(button))
+        button.bind("<ButtonRelease-1>", lambda event: self.buttonOnEnter(button)) 
+        button.bind("<Leave>", lambda event: self.buttonOnLeave(button))
+        return button  
+
+    def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
+        button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
+    def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
+        button.configure(fg_color=fg_color, text_color=text_color)
+    
+    def clearButtonAction(self):
+        for entry in self.entryDict.values():
+            entry.delete(0, "end")
+        self.lettresRestantes = self.LETTRE_DE_ALPHABET
+        self.entryDict[ord('A')].focus_set()
+
+
+        
     
 
     
+    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1},nbrLine=0,nbrCol = 0,lineWay = False,lineVal = 0,colVal = 0):
+        if not lineWay :
+            for line,weight in dictR.items():
+                pannel.grid_rowconfigure(line, weight=weight)
+            for col,weight in dictC.items():
+                pannel.grid_columnconfigure(col, weight=weight)
+        else:
+            for i in range(nbrLine):
+                pannel.grid_rowconfigure(i, weight=lineVal)
+            for i in range(nbrCol):
+                pannel.grid_columnconfigure(i, weight=colVal)
+
+    def gestionDesLettres(self,lettreApres,lettreAvant):
+
+        if (lettreApres in self.lettresRestantes) and len(lettreApres) <=1 :
+            self.lettresRestantes.remove(lettreApres)
+            return True
+        elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
+            self.lettresRestantes.append(lettreAvant)
+            return True
+        else:
+            return False
+
+    
+
+
+
+    
 if __name__ == "__main__":
-    app = Interface()
+    app = defineAmelioCesarKeyFrame()
     app.mainloop()
