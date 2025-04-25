@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from abc import ABC, abstractmethod
 
 FRAME_WIDTH = 1200
 FRAME_HEIGHT = 700
@@ -48,6 +49,41 @@ BUTTON_BORDER_COLOR_HOVER = "black"
 BUTTON_BORDER_WIDTH_HOVER = 3
 
 #--------------------------------------------
+
+
+class ToolBox(ABC,ctk.CTk):
+
+   
+    
+    @staticmethod
+    def configureGrid(pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
+
+        for line,weight in dictR.items():
+            pannel.grid_rowconfigure(line, weight=weight)
+        for col,weight in dictC.items():
+            pannel.grid_columnconfigure(col, weight=weight)
+        
+    
+    @staticmethod
+    def createTextsEntrys(pannel,ligne = 3,colonne = 0,textLabel = "Texte en clair",resultLabel = "Texte chiffré",entryWidth = 300,entryHeight = 200,entryBorderColor = "black",entryBorderWidth=3, entryFgColor = "white" ,entryTextColor = RIGHT_PANEL_TEXT_COLOR,entryFont = RIGHT_PANEL_FONT,label1Text = "Texte en clair",label2Text = "Texte chiffré",label1Font = RIGHT_PANEL_FONT,label2Font = RIGHT_PANEL_FONT,label1TextColor= RIGHT_PANEL_TEXT_COLOR,label2TextColor = RIGHT_PANEL_TEXT_COLOR):
+        textLabel = ctk.CTkLabel(pannel,text=label1Text,font=label1Font, text_color=label1TextColor)
+        textLabel.grid(row=ligne-1, column=colonne+1, pady=0, padx=(10,0), sticky="nesw")
+
+        resultLabel = ctk.CTkLabel(pannel,text=label2Text,font=label2Font, text_color=label2TextColor)
+        resultLabel.grid(row=ligne-1, column=colonne+3, pady=0, padx=(0, 10), sticky="nesw")
+        
+        textEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
+        textEntry.grid(row=ligne, column=colonne, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
+        textEntry.focus_set()
+
+        resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
+        resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
+        resultEntry.configure(state="disabled")
+
+        return textLabel,resultLabel,textEntry,resultEntry
+    
+
+
 
 class Interface(ctk.CTk):
     def __init__(self):
@@ -173,31 +209,9 @@ class Interface(ctk.CTk):
         return panel
     
 
-    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
-
-        for line,weight in dictR.items():
-            pannel.grid_rowconfigure(line, weight=weight)
-        for col,weight in dictC.items():
-            pannel.grid_columnconfigure(col, weight=weight)
-        
+   
     
-    
-    def createTextsEntrys(self,pannel,ligne = 3,colonne = 0,textLabel = "Texte en clair",resultLabel = "Texte chiffré",entryWidth = 300,entryHeight = 200,entryBorderColor = "black",entryBorderWidth=3, entryFgColor = "white" ,entryTextColor = RIGHT_PANEL_TEXT_COLOR,entryFont = RIGHT_PANEL_FONT,label1Text = "Texte en clair",label2Text = "Texte chiffré",label1Font = RIGHT_PANEL_FONT,label2Font = RIGHT_PANEL_FONT,label1TextColor= RIGHT_PANEL_TEXT_COLOR,label2TextColor = RIGHT_PANEL_TEXT_COLOR):
-        textLabel = ctk.CTkLabel(pannel,text=label1Text,font=label1Font, text_color=label1TextColor)
-        textLabel.grid(row=ligne-1, column=colonne+1, pady=0, padx=(10,0), sticky="nesw")
-
-        resultLabel = ctk.CTkLabel(pannel,text=label2Text,font=label2Font, text_color=label2TextColor)
-        resultLabel.grid(row=ligne-1, column=colonne+3, pady=0, padx=(0, 10), sticky="nesw")
-        
-        textEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
-        textEntry.grid(row=ligne, column=colonne, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
-        textEntry.focus_set()
-
-        resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
-        resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
-        resultEntry.configure(state="disabled")
-
-        return textLabel,resultLabel,textEntry,resultEntry
+   
     
     def mainPart(self,pannel,title = "",titleFont = RIGHT_PANEL_TITLE_FONT,titleTextColor = RIGHT_PANEL_TITLE_COLOR,isGrid = True,dictC ={0: 0, 1: 1, 2: 1, 3: 1},dictR={}):
         titleFrame = ctk.CTkFrame(pannel.master,fg_color=pannel.cget("fg_color") ,corner_radius=0,height=100)
