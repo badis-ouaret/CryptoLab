@@ -684,7 +684,109 @@ class defineAffineKeyFrame(ctk.CTk):
     def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
         button.configure(fg_color=fg_color, text_color=text_color)
         
+class defineHillKeyFrame(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("800x600")
+        self.resizable(False, False)  
+        self.main_frame = ctk.CTkFrame(self,fg_color=RIGHT_PANEL_BG_COLOR)
+        self.main_frame.pack(fill="both", expand=True)
+        self.sizeMat = 3
 
+        self.entryFrame = ctk.CTkFrame(self.main_frame,fg_color=RIGHT_PANEL_BG_COLOR)
+        self.entryFrame.pack(side="top",fill="x", expand=True)
+        
+        self.keyLabel = ctk.CTkLabel(self.entryFrame, text="Taille de la matrice :", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        self.keyEntry = ctk.CTkEntry(self.entryFrame, width=70,height=40,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key")
+        
+        self.configureGrid(self.entryFrame,lineWay=True,nbrLine=3,nbrCol=6,lineVal = 1,colVal = 1)
+        self.keyLabel.grid_configure(column=2,row=1,padx=10,pady=20,sticky="e")
+        self.keyEntry.grid_configure(column=3,row=1,padx=10,pady=20,sticky="w")
+        
+        self.matrixFrame = ctk.CTkFrame(self.main_frame,fg_color=RIGHT_PANEL_BG_COLOR)
+        self.matrixFrame.pack(side="top",fill="x",expand=True)
+        self.configureGrid(self.matrixFrame,lineWay=True,nbrLine=9+1,nbrCol=9+6,lineVal=1,colVal=1)
+
+        self.entryList =[]     
+        
+
+        
+
+        self.buttonFrame = ctk.CTkFrame(self.main_frame,fg_color=RIGHT_PANEL_BG_COLOR)
+        self.buttonFrame.pack(side = "bottom",fill="x",expand=True)
+        self.configureGrid(self.buttonFrame,lineWay=True,nbrLine=3,nbrCol=3,lineVal=1,colVal=1)
+        self.submitButton = self.createButton(self.buttonFrame,text="Valider",ligne=2,colonne=1,padx=0,pady=20)
+
+        self.vcmd = (self.register(self.gestionDesEntry),'%P')
+        self.vcmd2 = (self.register(self.gestionDesMatEntry),'%P')
+        self.keyEntry.configure(validatecommand=self.vcmd)
+
+
+
+
+    def gestionDesEntry(self,apres):        
+        if apres.isdigit() and len(apres)<=1 or apres=="":
+            if apres=="":
+                self.sizeMat = 0
+            else:
+                self.sizeMat = int(apres)
+                self.creerMatrice()
+            return True
+        else:
+            return False
+    
+    def gestionDesMatEntry(self,apres):        
+        return apres.isdigit() and len(apres)<=2 or apres==""
+        
+    def creerMatrice(self):
+
+        if len(self.entryList) != 0:
+            for entry in self.entryList:
+                entry.destroy()
+            self.entryList = []
+        colDeb = 6-(self.sizeMat-2)//2
+        
+        line = 0
+        col = colDeb
+        while line<self.sizeMat:
+            self.Entry = ctk.CTkEntry(self.matrixFrame,width=35,height=35,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key",border_width=2,border_color="black")
+            self.Entry.grid(row=line, column=col, pady=0 ,padx=(0,0), sticky="nesw") 
+            self.Entry.configure(validatecommand=self.vcmd2)          
+
+            self.entryList.append(self.Entry)
+
+            col += 1
+            if col-colDeb == self.sizeMat :
+                line = line +1
+                col = colDeb
+        
+                
+
+    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1},nbrLine=0,nbrCol = 0,lineWay = False,lineVal = 0,colVal = 0):
+        if not lineWay :
+            for line,weight in dictR.items():
+                pannel.grid_rowconfigure(line, weight=weight)
+            for col,weight in dictC.items():
+                pannel.grid_columnconfigure(col, weight=weight)
+        else:
+            for i in range(nbrLine):
+                pannel.grid_rowconfigure(i, weight=lineVal)
+            for i in range(nbrCol):
+                pannel.grid_columnconfigure(i, weight=colVal)
+
+
+    def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
+        button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
+        button.grid(row=ligne, column=colonne, pady=pady, padx=padx, sticky="nesw")
+        button.bind("<Enter>", lambda event: self.buttonOnEnter(button))
+        button.bind("<ButtonRelease-1>", lambda event: self.buttonOnEnter(button)) 
+        button.bind("<Leave>", lambda event: self.buttonOnLeave(button))
+        return button  
+
+    def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
+        button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
+    def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
+        button.configure(fg_color=fg_color, text_color=text_color)    
     
             
 
@@ -700,5 +802,5 @@ class defineAffineKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineAffineKeyFrame()
+    app = defineHillKeyFrame()
     app.mainloop()
