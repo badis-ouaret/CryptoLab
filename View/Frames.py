@@ -300,7 +300,7 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
         self.configureGrid(self.main_frame,lineWay=True,nbrLine=6,nbrCol=10,lineVal=1,colVal=1)
         self.LETTRE_DE_ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-        self.lettresRestantes = self.LETTRE_DE_ALPHABET 
+        self.lettresRestantes = list(self.LETTRE_DE_ALPHABET) 
         vcmd = (self.register(self.gestionDesLettres),'%P','%s') 
         self.entryDict = {}    
         line = 0
@@ -341,7 +341,6 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
     def clearButtonAction(self):
         for entry in self.entryDict.values():
             entry.delete(0, "end")
-        self.lettresRestantes = self.LETTRE_DE_ALPHABET
         self.entryDict[ord('A')].focus_set()
 
 
@@ -408,7 +407,7 @@ class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair
 
 
 
-class definePolybeKeyFrame(keyType1Frame):
+class definePolybePlayfairKeyFrame(keyType1Frame):
     def __init__(self,width = 800,height = 600):
         super().__init__(width,height)
         #self.keyEntry.configure(state="disabled")
@@ -428,7 +427,7 @@ class definePolybeKeyFrame(keyType1Frame):
         self.configureGrid(self.matrice,lineWay=True,nbrLine=11,nbrCol=11,lineVal=1,colVal=1)
         self.LETTRE_DE_ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-        self.lettresRestantes = self.LETTRE_DE_ALPHABET
+        self.lettresRestantes = list(self.LETTRE_DE_ALPHABET)
         vcmdKey = (self.register(self.gestionDesLettresDansKey),'%P','%s')
         #vcmdMat =  (self.register(self.gestionDesLettresDansMatrice),'%P','%s')
         vcmdJumlee2 = (self.register(self.gestionDesLettresDansJumlee2),'%P','%s')
@@ -449,7 +448,7 @@ class definePolybeKeyFrame(keyType1Frame):
         for c in range(25):
             self.Entry = ctk.CTkEntry(self.matrice,width=35,height=35,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key",border_width=2,border_color="black")
             self.Entry.grid(row=line, column=col, pady=0 ,padx=(0,0), sticky="nesw")
-            self.Entry.configure(state="disabled")
+            self.Entry.configure(state="readonly")
             
 
             self.entryList.append(self.Entry)
@@ -458,6 +457,16 @@ class definePolybeKeyFrame(keyType1Frame):
             if col == 8 :
                 line = line +1
                 col = 3
+
+        self.clearButton = self.createButton(self.matrice,text="Effacer",command=self.clearButtonAction,ligne=5,colonne=4,pady=(50,0))
+        self.fillButton = self.createButton(self.matrice, text="Fill",command=self.fillButtonAction,ligne=7,colonne=4,pady=10)
+        self.validateButton= self.createButton(self.matrice,text="Valider",ligne=9,colonne=4,pady=(0,50))
+        self.validateButton.grid_configure(columnspan=3,rowspan=2)
+        self.fillButton.grid_configure(columnspan=3,rowspan=2)
+        self.clearButton.grid_configure(columnspan=3,rowspan=2)
+
+        self.matriceFull = False
+        
 
     
         
@@ -469,10 +478,10 @@ class definePolybeKeyFrame(keyType1Frame):
         elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
             self.lettresRestantes.append(lettreAvant)
             return True
-        elif self.lettreJumleeSet() and (lettreApres[len(lettreApres)-1] in self.lettresRestantes) and len(lettreApres[len(lettreApres)-1] ) <=1 :
+        elif len(lettreAvant)>=1 and len(lettreApres) and self.lettreJumleeSet() and (lettreApres[len(lettreApres)-1] in self.lettresRestantes) and len(lettreApres[len(lettreApres)-1] ) <=1 :
             self.lettresRestantes.remove(lettreApres[len(lettreApres)-1] )
             return True
-        elif lettreApres == lettreAvant[0:len(lettreAvant)-1] and lettreAvant[len(lettreAvant)-1].isalpha() and len(lettreAvant[len(lettreAvant)-1]) == 1 and lettreAvant[len(lettreAvant)-1].isascii() and lettreAvant[len(lettreAvant)-1].isupper():
+        elif len(lettreApres)>=1 and len(lettreAvant)>=1 and lettreApres == lettreAvant[0:len(lettreAvant)-1] and lettreAvant[len(lettreAvant)-1].isalpha() and len(lettreAvant[len(lettreAvant)-1]) == 1 and lettreAvant[len(lettreAvant)-1].isascii() and lettreAvant[len(lettreAvant)-1].isupper():
             self.lettresRestantes.append(lettreAvant[len(lettreAvant)-1])
             return True         
         elif self.lettreJumleeSet() and len(lettreApres)>len(lettreAvant) and self.lettreEnleveAjoute(lettreApres,lettreAvant) in self.lettresRestantes and len(lettreApres) <=25 :
@@ -481,21 +490,15 @@ class definePolybeKeyFrame(keyType1Frame):
         elif len(lettreAvant)>len(lettreApres) and self.lettreEnleveAjoute(lettreAvant,lettreApres).isalpha() and self.lettreEnleveAjoute(lettreAvant,lettreApres).isascii() and self.lettreEnleveAjoute(lettreAvant,lettreApres).isupper():
             self.lettresRestantes.append(self.lettreEnleveAjoute(lettreAvant,lettreApres))
             return True
+        elif len(lettreAvant)>len(lettreApres) and lettreApres == "":
+            for c in lettreAvant:
+                if c.isalpha() and c.isascii and c.isupper():
+                    self.lettresRestantes.append(c)
+            return True
         else:
             return False  
         
-    # def gestionDesLettresDansMatrice(self,lettreApres,lettreAvant):            
-    #     if self.lettreJumleeSet() and (lettreApres in self.lettresRestantes) and len(lettreApres) <=1 :
-    #         self.actualiserKey()
-    #         self.lettresRestantes.remove(lettreApres)
-            
-    #         return True
-    #     elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
-    #         self.lettresRestantes.append(lettreAvant)
-    #         self.actualiserKey()
-    #         return True
-    #     else:
-    #         return False
+    
     
     def gestionDesLettresDansJumlee2(self,lettreApres,lettreAvant):
         
@@ -551,6 +554,76 @@ class definePolybeKeyFrame(keyType1Frame):
         for c1,c2 in zip(ajoute,enleve):
             if c1 != c2:
                 return c1
+        return ""
+    def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
+        button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
+        button.grid(row=ligne, column=colonne, pady=pady, padx=padx, sticky="nesw")
+        button.bind("<Enter>", lambda event: self.buttonOnEnter(button))
+        button.bind("<ButtonRelease-1>", lambda event: self.buttonOnEnter(button)) 
+        button.bind("<Leave>", lambda event: self.buttonOnLeave(button))
+        return button  
+
+    def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
+        button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
+    def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
+        button.configure(fg_color=fg_color, text_color=text_color)
+    
+    def clearButtonAction(self):
+        if self.matriceFull:
+            for entry in self.entryList:
+                entry.configure(state="normal")
+                entry.delete(0, "end")
+                entry.configure(state="readonly")
+            self.matriceFull = False
+        self.keyEntry.delete(0,"end")
+        self.lettresJumleesEntry1.delete(0,"end")
+        self.lettresJumleesEntry2.delete(0,"end")
+        self.lettresJumleesEntry1.focus_set()
+    
+    def fillButtonAction(self):
+        if self.lettreJumleeSet():
+            # Récupérer la clé entrée
+            key = self.keyEntry.get()
+            lJumle1 = self.lettresJumleesEntry1.get()
+            lJumle2 = self.lettresJumleesEntry2.get()
+            
+            # Nettoyer tous les champs d'abord
+            if self.matriceFull:
+                for entry in self.entryList:
+                    entry.configure(state="normal")
+                    entry.delete(0, "end")
+                    entry.configure(state="readonly")
+
+            indEntry = 0
+
+            # Remplir avec les lettres de la clé
+            for k in key:
+                if indEntry < len(self.entryList):
+                    self.entryList[indEntry].configure(state="normal")
+                    if k == lJumle1:
+                        self.entryList[indEntry].insert(0, k+"/"+lJumle2)
+                    else:
+                        self.entryList[indEntry].insert(0, k)
+                    self.entryList[indEntry].configure(state="readonly")
+                    indEntry += 1
+
+            # Compléter avec les lettres restantes
+            for c in self.LETTRE_DE_ALPHABET:
+                if c not in key:
+                    if indEntry < len(self.entryList):                                             
+                        if c != lJumle2:
+                            self.entryList[indEntry].configure(state="normal")
+                            if c == lJumle1:
+                                self.entryList[indEntry].insert(0, lJumle1+"/"+lJumle2) 
+                            else:                         
+                                self.entryList[indEntry].insert(0, c)
+                            self.entryList[indEntry].configure(state="readonly")
+                            indEntry += 1
+                        
+            self.matriceFull = True
+
+
+
 
         
 
@@ -569,5 +642,5 @@ class definePolybeKeyFrame(keyType1Frame):
 
     
 if __name__ == "__main__":
-    app = definePolybeKeyFrame(800,600)
+    app = definePolybePlayfairKeyFrame(800,600)
     app.mainloop()
