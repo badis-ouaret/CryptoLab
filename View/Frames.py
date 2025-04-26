@@ -208,7 +208,29 @@ class Interface(ctk.CTk):
         panel.pack(side="bottom",fill="both",expand=True)
         return panel
     
+    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
 
+        for line,weight in dictR.items():
+            pannel.grid_rowconfigure(line, weight=weight)
+        for col,weight in dictC.items():
+            pannel.grid_columnconfigure(col, weight=weight)
+    
+    def createTextsEntrys(self,pannel,ligne = 3,colonne = 0,textLabel = "Texte en clair",resultLabel = "Texte chiffré",entryWidth = 300,entryHeight = 200,entryBorderColor = "black",entryBorderWidth=3, entryFgColor = "white" ,entryTextColor = RIGHT_PANEL_TEXT_COLOR,entryFont = RIGHT_PANEL_FONT,label1Text = "Texte en clair",label2Text = "Texte chiffré",label1Font = RIGHT_PANEL_FONT,label2Font = RIGHT_PANEL_FONT,label1TextColor= RIGHT_PANEL_TEXT_COLOR,label2TextColor = RIGHT_PANEL_TEXT_COLOR):
+        textLabel = ctk.CTkLabel(pannel,text=label1Text,font=label1Font, text_color=label1TextColor)
+        textLabel.grid(row=ligne-1, column=colonne+1, pady=0, padx=(10,0), sticky="nesw")
+
+        resultLabel = ctk.CTkLabel(pannel,text=label2Text,font=label2Font, text_color=label2TextColor)
+        resultLabel.grid(row=ligne-1, column=colonne+3, pady=0, padx=(0, 10), sticky="nesw")
+        
+        textEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
+        textEntry.grid(row=ligne, column=colonne, pady=30, padx=(30, 0),columnspan=2, sticky="nesw")
+        textEntry.focus_set()
+
+        resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
+        resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
+        resultEntry.configure(state="disabled")
+
+        return textLabel,resultLabel,textEntry,resultEntry
    
     
    
@@ -264,30 +286,6 @@ class Interface(ctk.CTk):
         return char.isalpha() and char.isascii()
 
 
-class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair
-    def __init__(self):
-        super().__init__()
-        self.geometry("400x100")
-        self.resizable(False, False)        
-        self.main_frame = ctk.CTkFrame(self, fg_color=RIGHT_PANEL_BG_COLOR)
-        self.main_frame.pack(fill="both", expand=True)
-        self.configureGrid(self.main_frame)
-        keyEntry = self.createKeyEntry(self.main_frame)
-    
-    def createKeyEntry(self,pannel,ligne = 1,colonne = 2,validate = "key",vcmd = None,labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR):
-        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=labelFont, text_color=labelTextColor)
-        cleLabel.grid(row=ligne, column=colonne-1, pady=30, padx=(0, 10), sticky="e")
-
-        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=entryFont, text_color=entryTextColor ,validate = validate ,validatecommand=vcmd)
-        cleEntry.grid(row=ligne, column=colonne, pady=30 ,padx=0, sticky="nesw")
-        return cleEntry
-    
-    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1}):
-
-        for line,weight in dictR.items():
-            pannel.grid_rowconfigure(line, weight=weight)
-        for col,weight in dictC.items():
-            pannel.grid_columnconfigure(col, weight=weight)
 
 
 
@@ -314,7 +312,7 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
             self.Entry = ctk.CTkEntry(self.main_frame,width=35,height=35,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key" ,validatecommand=vcmd)
             self.Entry.grid(row=line, column=col+1, pady=10 ,padx=(0,0), sticky="w")
 
-            self.entryDict[c] = self.Entry
+            self.entryDict[chr(c)] = self.Entry
 
             col += 2
             if col == 10 :
@@ -373,6 +371,197 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
             return True
         else:
             return False
+        
+
+
+class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair
+    def __init__(self,width = 400,height = 100):
+        super().__init__()
+        self.geometry(f"{width}x{height}")
+        self.resizable(False, False)  
+        self.main_frame = ctk.CTkFrame(self,fg_color=RIGHT_PANEL_BG_COLOR)
+        self.main_frame.pack(fill="both", expand=True)    
+        self.top_frame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
+        self.top_frame.pack(side="top",fill ="x")
+        self.configureGrid(self.top_frame)
+        self.keyEntry = self.createKeyEntry(self.top_frame)
+    
+    def createKeyEntry(self,pannel,ligne = 1,colonne = 2,validate = "key",vcmd = None,labelFont = RIGHT_PANEL_FONT,labelTextColor = RIGHT_PANEL_TEXT_COLOR ,entryFont = KEY_ENTRY_FONT,    entryTextColor = RIGHT_PANEL_TEXT_COLOR):
+        cleLabel = ctk.CTkLabel(pannel, text="Clé", font=labelFont, text_color=labelTextColor)
+        cleLabel.grid(row=ligne, column=colonne-1, pady=30, padx=(0, 10), sticky="e")
+
+        cleEntry = ctk.CTkEntry(pannel, width=300,height=35,font=entryFont, text_color=entryTextColor ,validate = validate ,validatecommand=vcmd)
+        cleEntry.grid(row=ligne, column=colonne, pady=30 ,padx=0, sticky="nesw")
+        return cleEntry
+    
+    def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1},nbrLine=0,nbrCol = 0,lineWay = False,lineVal = 0,colVal = 0):
+        if not lineWay :
+            for line,weight in dictR.items():
+                pannel.grid_rowconfigure(line, weight=weight)
+            for col,weight in dictC.items():
+                pannel.grid_columnconfigure(col, weight=weight)
+        else:
+            for i in range(nbrLine):
+                pannel.grid_rowconfigure(i, weight=lineVal)
+            for i in range(nbrCol):
+                pannel.grid_columnconfigure(i, weight=colVal)
+
+
+
+class definePolybeKeyFrame(keyType1Frame):
+    def __init__(self,width = 800,height = 600):
+        super().__init__(width,height)
+        #self.keyEntry.configure(state="disabled")
+        self.lettresJumleesFrame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
+        self.lettresJumleesFrame.pack(side="top",fill ="x")
+        self.configureGrid(self.lettresJumleesFrame,lineWay=True,nbrLine=1,nbrCol=10,lineVal=0,colVal=1)
+        self.lettresJumleesLabel = ctk.CTkLabel(self.lettresJumleesFrame, text="Lettres jumelées :", font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR)
+        self.lettresJumleesLabel.grid(row=0, column=2, pady=30, padx=(0, 10), sticky="w",columnspan=3)
+        self.lettresJumleesEntry1 = ctk.CTkEntry(self.lettresJumleesFrame, width=30,height=30,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key")
+        self.lettresJumleesEntry1.grid(row=0, column=3, pady=30 ,padx=(0,10), sticky="e")
+        self.lettresJumleesEntry2 = ctk.CTkEntry(self.lettresJumleesFrame, width=30,height=30,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key")
+        self.lettresJumleesEntry2.grid(row=0, column=4, pady=30 ,padx=0, sticky="w")
+
+        self.matrice = ctk.CTkFrame(self.main_frame,fg_color=RIGHT_PANEL_BG_COLOR,corner_radius=0)
+        self.matrice.pack(side="bottom",fill="both",expand=True)
+
+        self.configureGrid(self.matrice,lineWay=True,nbrLine=11,nbrCol=11,lineVal=1,colVal=1)
+        self.LETTRE_DE_ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+ 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        self.lettresRestantes = self.LETTRE_DE_ALPHABET
+        vcmdKey = (self.register(self.gestionDesLettresDansKey),'%P','%s')
+        #vcmdMat =  (self.register(self.gestionDesLettresDansMatrice),'%P','%s')
+        vcmdJumlee2 = (self.register(self.gestionDesLettresDansJumlee2),'%P','%s')
+        vcmdJumlee1 = (self.register(self.gestionDesLettresDansJumlee1),'%P','%s')
+        self.lettresJumleesEntry2.configure(validatecommand=vcmdJumlee2)
+        self.lettresJumleesEntry1.configure(validatecommand=vcmdJumlee1)
+        self.keyEntry.configure(validatecommand=vcmdKey)
+
+
+        
+        
+        
+        
+
+        self.entryList =[]     
+        line = 0
+        col = 3
+        for c in range(25):
+            self.Entry = ctk.CTkEntry(self.matrice,width=35,height=35,font=RIGHT_PANEL_FONT, text_color=RIGHT_PANEL_TEXT_COLOR ,validate = "key",border_width=2,border_color="black")
+            self.Entry.grid(row=line, column=col, pady=0 ,padx=(0,0), sticky="nesw")
+            self.Entry.configure(state="disabled")
+            
+
+            self.entryList.append(self.Entry)
+
+            col += 1
+            if col == 8 :
+                line = line +1
+                col = 3
+
+    
+        
+
+    def gestionDesLettresDansKey(self,lettreApres,lettreAvant):
+        if self.lettreJumleeSet() and (lettreApres in self.lettresRestantes) and len(lettreApres) <=1 :
+            self.lettresRestantes.remove(lettreApres)
+            return True
+        elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
+            self.lettresRestantes.append(lettreAvant)
+            return True
+        elif self.lettreJumleeSet() and (lettreApres[len(lettreApres)-1] in self.lettresRestantes) and len(lettreApres[len(lettreApres)-1] ) <=1 :
+            self.lettresRestantes.remove(lettreApres[len(lettreApres)-1] )
+            return True
+        elif lettreApres == lettreAvant[0:len(lettreAvant)-1] and lettreAvant[len(lettreAvant)-1].isalpha() and len(lettreAvant[len(lettreAvant)-1]) == 1 and lettreAvant[len(lettreAvant)-1].isascii() and lettreAvant[len(lettreAvant)-1].isupper():
+            self.lettresRestantes.append(lettreAvant[len(lettreAvant)-1])
+            return True         
+        elif self.lettreJumleeSet() and len(lettreApres)>len(lettreAvant) and self.lettreEnleveAjoute(lettreApres,lettreAvant) in self.lettresRestantes and len(lettreApres) <=25 :
+            self.lettresRestantes.remove(self.lettreEnleveAjoute(lettreApres,lettreAvant))
+            return True
+        elif len(lettreAvant)>len(lettreApres) and self.lettreEnleveAjoute(lettreAvant,lettreApres).isalpha() and self.lettreEnleveAjoute(lettreAvant,lettreApres).isascii() and self.lettreEnleveAjoute(lettreAvant,lettreApres).isupper():
+            self.lettresRestantes.append(self.lettreEnleveAjoute(lettreAvant,lettreApres))
+            return True
+        else:
+            return False  
+        
+    # def gestionDesLettresDansMatrice(self,lettreApres,lettreAvant):            
+    #     if self.lettreJumleeSet() and (lettreApres in self.lettresRestantes) and len(lettreApres) <=1 :
+    #         self.actualiserKey()
+    #         self.lettresRestantes.remove(lettreApres)
+            
+    #         return True
+    #     elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
+    #         self.lettresRestantes.append(lettreAvant)
+    #         self.actualiserKey()
+    #         return True
+    #     else:
+    #         return False
+    
+    def gestionDesLettresDansJumlee2(self,lettreApres,lettreAvant):
+        
+        if lettreApres != self.lettresJumleesEntry1.get() and (lettreApres in self.lettresRestantes) and len(lettreApres) <=1 :
+            self.lettresRestantes.remove(lettreApres)
+            return True
+        elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
+            self.lettresRestantes.append(lettreAvant)
+            return True
+        else:
+            return False 
+    
+    def gestionDesLettresDansJumlee1(self,lettreApres,lettreAvant):
+        
+        if lettreApres != self.lettresJumleesEntry2.get() and len(lettreApres) ==1 and lettreApres.isascii() and lettreApres.isupper():
+            
+            return True
+        elif lettreApres == "" and lettreAvant.isalpha() and len(lettreAvant) == 1 and lettreAvant.isascii() and lettreAvant.isupper():
+            
+            return True
+        else:
+            return False 
+        
+    def listToWord(self,list):
+        word = ""
+        for i in range(len(list)):
+            if list[i] != "" and list[i].isalpha() and len(list[i]) == 1 and list[i].isupper():
+                word += list[i]
+        return word
+    
+    def wordToList(self,word):
+        list = []
+        for i in range(len(word)):
+            if word[i] != "" and word[i].isalpha() and len(word[i]) == 1 and word[i].isupper():
+                list.append(word[i])
+        return list
+
+    def lettreJumleeSet(self):
+        return self.lettresJumleesEntry1.get() != "" and self.lettresJumleesEntry2.get() != ""
+    
+    def actualiserMat(self):
+        list = self.wordToList(self.keyEntry.get())
+        for i in range(0,len(list)):
+            self.entryList[i].insert(0,list[i])
+    def actualiserKey(self):
+        list =[]
+        for entry in self.entryList:
+            list.append(entry.get())
+        word = self.listToWord(list)
+        self.keyEntry.insert(0,word) 
+    
+    def lettreEnleveAjoute(self,ajoute,enleve):
+        for c1,c2 in zip(ajoute,enleve):
+            if c1 != c2:
+                return c1
+
+        
+
+    
+            
+
+
+    
+
+
+
 
     
 
@@ -380,5 +569,5 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineAmelioCesarKeyFrame()
+    app = definePolybeKeyFrame(800,600)
     app.mainloop()
