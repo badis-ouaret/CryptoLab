@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import Controller.Controllers
 from abc import ABC, abstractmethod
 
 FRAME_WIDTH = 1200
@@ -78,7 +79,7 @@ class ToolBox(ABC,ctk.CTk):
 
         resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
         resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
-        resultEntry.configure(state="disabled")
+        resultEntry.configure(state="readonly")
 
         return textLabel,resultLabel,textEntry,resultEntry
     
@@ -86,6 +87,7 @@ class ToolBox(ABC,ctk.CTk):
 
 
 class Interface(ctk.CTk):
+    controller = None
     def __init__(self):
         super().__init__()
         self.geometry(f"{FRAME_WIDTH}x{FRAME_HEIGHT}")
@@ -158,13 +160,36 @@ class Interface(ctk.CTk):
         self.operationButton,self.clearButton,self.textEntry,self.resultEntry,self.textLabel,self.resultLabel,self.title = self.mainPart(self.panelPrincipal,title="Chiffrement")        
         self.clearButton.configure(command=self.clearButtonAction2)        
         self.keyDefButton = self.createButton(self.panelPrincipal, text="Définir la clé",ligne=1,colonne=2,pady=(0,20))
+        self.keyDefButton.configure(command=self.controller.keyDefButtonFunction)        
+        self.operationButton.configure(command=self.controller.operationButton)
         
+
+
         self.update_panel_for_method()
         self.choixMethode.trace_add("write",self.update_panel_for_method)
         #self.update_panel_for_operation()
         self.traceOperationId = self.choixOperation.trace_add("write",self.update_panel_for_operation)
             #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+    #geters ========================================
+    def getMethodeDeChiffrement(self):
+        return self.choixMethode.get()
+    def getOperation(self):
+        return self.choixOperation.get()    
+    def getTextEntry(self):
+        return self.textEntry.get()
+    def getResultEntry(self):
+        return self.resultEntry.get()
+    #==========================================================
+    #seters ===================================================
+
+    def setResultEntryText(self,text):
+        self.resultEntry.configure(state="normal")
+        self.resultEntry.delete(0,'end')         # Efface tout le texte
+        self.resultEntry.insert(0,text)  # Insère le texte à la position 0
+        self.resultEntry.configure(state="readonly")
+    #==========================================================
+    
 
     #Gestion de l'affichage selon les boutons radios selectionnés
     def update_panel_for_method(self, *args):         
@@ -172,6 +197,7 @@ class Interface(ctk.CTk):
 
         if method == "Cesar":
             self.title.configure(text = "Chiffrement de César")
+
         elif method == "Vigenere":
             self.title.configure(text = "Chiffrement de Vigenère")
         elif method == "Playfair":
@@ -192,7 +218,8 @@ class Interface(ctk.CTk):
         self.resultLabel.configure(text="Texte chiffré" if self.choixOperation.get() == "Chiffrer" else "Texte en clair")
         self.operationButton.configure(text="Chiffrer" if self.choixOperation.get() == "Chiffrer" else "Déchiffrer")
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+    def start(self):
+        self.mainloop()
 
 
 
@@ -228,7 +255,7 @@ class Interface(ctk.CTk):
 
         resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
         resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
-        resultEntry.configure(state="disabled")
+        resultEntry.configure(state="readonly")
 
         return textLabel,resultLabel,textEntry,resultEntry
    
@@ -275,6 +302,7 @@ class Interface(ctk.CTk):
         self.textEntry.delete("0.0", "end")
         self.resultEntry.delete("0.0", "end")
         self.textEntry.focus_set()
+        self.controller.clearButtonFunction()        
     #=======================================================================
 
     #Methodes pannel des entrées et des boutons ==================================================
@@ -790,6 +818,8 @@ class defineHillKeyFrame(ctk.CTk):
     
             
 
+            
+    
 
     
 
@@ -802,5 +832,5 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineHillKeyFrame()
+    app = Interface()
     app.mainloop()
