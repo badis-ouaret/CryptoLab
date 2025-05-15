@@ -1,4 +1,5 @@
 import customtkinter as ctk
+
 from abc import ABC, abstractmethod
 
 FRAME_WIDTH = 1200
@@ -78,7 +79,7 @@ class ToolBox(ABC,ctk.CTk):
 
         resultEntry = ctk.CTkTextbox(pannel, width=entryWidth,height=entryHeight,font=entryFont, text_color=entryTextColor,wrap="word",activate_scrollbars=True,fg_color=entryFgColor,border_width=entryBorderWidth,border_color=entryBorderColor)
         resultEntry.grid(row=ligne, column=colonne+3, pady=30, padx=(0, 30),columnspan=2, sticky="nesw")
-        resultEntry.configure(state="disabled")
+        resultEntry.configure(state="readonly")
 
         return textLabel,resultLabel,textEntry,resultEntry
     
@@ -109,7 +110,8 @@ class Interface(ctk.CTk):
             ("Playfair", "Playfair"),
             ("Hill", "Hill"),
             ("Affine", "Affine"),
-            ("Transposition", "Transpo")
+            ("Transposition", "Transpo"),
+            ("Chiffrement DES", "DES")
         ]
         
         # Création dynamique des boutons radio pour les méthodes de chiffrement
@@ -156,15 +158,39 @@ class Interface(ctk.CTk):
         self.panelPrincipal = ctk.CTkFrame(self.right_panel,fg_color=RIGHT_PANEL_BG_COLOR,corner_radius=0)
         self.panelPrincipal.pack(side="bottom", fill="both", expand=True)
         self.operationButton,self.clearButton,self.textEntry,self.resultEntry,self.textLabel,self.resultLabel,self.title = self.mainPart(self.panelPrincipal,title="Chiffrement")        
-        self.clearButton.configure(command=self.clearButtonAction2)        
+                
         self.keyDefButton = self.createButton(self.panelPrincipal, text="Définir la clé",ligne=1,colonne=2,pady=(0,20))
         
+        
+
+
         self.update_panel_for_method()
         self.choixMethode.trace_add("write",self.update_panel_for_method)
         #self.update_panel_for_operation()
         self.traceOperationId = self.choixOperation.trace_add("write",self.update_panel_for_operation)
             #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+    #geters ========================================
+    def getMethodeDeChiffrement(self):
+        return self.choixMethode.get()
+    def getOperation(self):
+        return self.choixOperation.get()    
+    def getTextEntry(self):
+        return self.textEntry.get()
+    def getResultEntry(self):
+        return self.resultEntry.get()
+    #==========================================================
+    #seters ===================================================
+    def messageAlerte(self,message,title="Erreur",buttonText="OK"):
+        self.CTkMessagebox(title=title, message=message, icon=buttonText)
+
+    def setResultEntryText(self,text):
+        self.resultEntry.configure(state="normal")
+        self.resultEntry.delete(0,'end')         # Efface tout le texte
+        self.resultEntry.insert(0,text)  # Insère le texte à la position 0
+        self.resultEntry.configure(state="disabled")
+    #==========================================================
+    
 
     #Gestion de l'affichage selon les boutons radios selectionnés
     def update_panel_for_method(self, *args):         
@@ -186,13 +212,16 @@ class Interface(ctk.CTk):
             self.title.configure(text = "Chiffrement Affine")
         elif method == "Transpo":
             self.title.configure(text = "Chiffrement par Transposition")
+        elif method == "DES":
+            self.title.configure(text = "Chiffrement DES")
 
     def update_panel_for_operation(self,*args):
         self.textLabel.configure(text="Texte en clair" if self.choixOperation.get() == "Chiffrer" else "Texte chiffré")
         self.resultLabel.configure(text="Texte chiffré" if self.choixOperation.get() == "Chiffrer" else "Texte en clair")
         self.operationButton.configure(text="Chiffrer" if self.choixOperation.get() == "Chiffrer" else "Déchiffrer")
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+    def start(self):
+        self.mainloop()
 
 
 
@@ -271,10 +300,7 @@ class Interface(ctk.CTk):
         cleEntry.delete(0, "end")
         textEntry.focus_set()
     
-    def clearButtonAction2(self):
-        self.textEntry.delete("0.0", "end")
-        self.resultEntry.delete("0.0", "end")
-        self.textEntry.focus_set()
+            
     #=======================================================================
 
     #Methodes pannel des entrées et des boutons ==================================================
@@ -373,7 +399,7 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
         
 
 
-class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair
+class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair,DES
     def __init__(self,width = 400,height = 100):
         super().__init__()
         self.geometry(f"{width}x{height}")
@@ -790,6 +816,8 @@ class defineHillKeyFrame(ctk.CTk):
     
             
 
+            
+    
 
     
 
@@ -802,5 +830,5 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineHillKeyFrame()
+    app = Interface()
     app.mainloop()
