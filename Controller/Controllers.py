@@ -13,6 +13,7 @@ class MainController():
         self.hill = ch.HillChiffreur()
         self.transpo = ch.TranspositionChiffreur()
         self.DES = ch.DESChiffreur()
+        self.keyFrame = None
 
         self.frame.keyDefButton.configure(command=self.keyDefButtonFunction)        
         self.frame.operationButton.configure(command=self.operationButtonFunction)
@@ -150,10 +151,22 @@ class MainController():
             self.clearButtonFunction()
 
 
-    def miniControllerCesarKeyFrame(self,key):
+    def miniControllerCesarKeyFrame(self,key=""):
         #doit permettre de recuperer la cle mise dans l'interface
-        print()
+        self.keyFrame = fr.keyType1Frame()
+        keyEntry = self.keyFrame.getKeyEntry()
+        keyEntry.insert(0,key)
+        
+
+
 
     def go(self):
         self.frame.start()    
+    
+
+
+    
+
+
+
     

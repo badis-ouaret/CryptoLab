@@ -430,7 +430,73 @@ class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair,DES
                 pannel.grid_rowconfigure(i, weight=lineVal)
             for i in range(nbrCol):
                 pannel.grid_columnconfigure(i, weight=colVal)
+    
+    def getKeyEntry(self):
+        return self.keyEntry
+    
+    def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
+        button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
+        button.grid(row=ligne, column=colonne, pady=pady, padx=padx, sticky="nesw")
+        button.bind("<Enter>", lambda event: self.buttonOnEnter(button))
+        button.bind("<ButtonRelease-1>", lambda event: self.buttonOnEnter(button)) 
+        button.bind("<Leave>", lambda event: self.buttonOnLeave(button))
+        return button  
 
+    def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
+        button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
+    def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
+        button.configure(fg_color=fg_color, text_color=text_color)
+
+    
+class defineCesarKeyFrame(keyType1Frame):
+    def __init__(self, width=600, height=250):
+        super().__init__(width, height)
+        vcmd = (self.register(self.gestionKeyEntryCesar),'%P')
+        self.keyEntry.configure(validatecommand=vcmd)
+        self.bottom_frame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
+        self.bottom_frame.pack(side="bottom",fill ="x")
+        self.configureGrid(self.bottom_frame,lineWay=True,nbrLine=4,nbrCol=11,lineVal=1,colVal = 1)
+
+        self.clearButton = self.createButton(self.bottom_frame,text="Effacer",command=self.clearButtonAction,ligne=0,colonne=4,pady=(0,5))
+        self.validateButton= self.createButton(self.bottom_frame,text="Valider",ligne=2,colonne=4,pady=(5,40))
+        self.clearButton.grid_configure(columnspan=3,rowspan=1)
+        self.validateButton.grid_configure(columnspan=3,rowspan=1)
+        
+                
+
+
+    def gestionKeyEntryCesar(self,apres):
+        return apres.isdigit() and apres.isascii() and int(apres)<=27 or apres ==""
+    
+    def clearButtonAction(self):
+        self.keyEntry.delete(0,"end")
+
+
+
+class defineVigenereKeyFrame(keyType1Frame):
+    def __init__(self, width=600, height=250):
+        super().__init__(width, height)
+        vcmd = (self.register(self.gestionKeyEntryVigenere),'%P')
+        self.keyEntry.configure(validatecommand=vcmd)
+        self.bottom_frame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
+        self.bottom_frame.pack(side="bottom",fill ="x")
+        self.configureGrid(self.bottom_frame,lineWay=True,nbrLine=4,nbrCol=11,lineVal=1,colVal = 1)
+
+        self.clearButton = self.createButton(self.bottom_frame,text="Effacer",command=self.clearButtonAction,ligne=0,colonne=4,pady=(0,5))
+        self.validateButton= self.createButton(self.bottom_frame,text="Valider",ligne=2,colonne=4,pady=(5,40))
+        self.clearButton.grid_configure(columnspan=3,rowspan=1)
+        self.validateButton.grid_configure(columnspan=3,rowspan=1)
+        
+                
+
+
+    def gestionKeyEntryVigenere(self,apres):
+        return apres.isascii() and apres.isalpha() or apres == ""
+    
+    def clearButtonAction(self):
+        self.keyEntry.delete(0,"end")
+        
+    
 
 
 class definePolybePlayfairKeyFrame(keyType1Frame):
@@ -581,18 +647,18 @@ class definePolybePlayfairKeyFrame(keyType1Frame):
             if c1 != c2:
                 return c1
         return ""
-    def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
-        button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
-        button.grid(row=ligne, column=colonne, pady=pady, padx=padx, sticky="nesw")
-        button.bind("<Enter>", lambda event: self.buttonOnEnter(button))
-        button.bind("<ButtonRelease-1>", lambda event: self.buttonOnEnter(button)) 
-        button.bind("<Leave>", lambda event: self.buttonOnLeave(button))
-        return button  
+    # def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
+    #     button = ctk.CTkButton(panel,text=text, font=font, text_color=text_color,fg_color=fg_color,height=height,hover_color=hover_color,command=command)
+    #     button.grid(row=ligne, column=colonne, pady=pady, padx=padx, sticky="nesw")
+    #     button.bind("<Enter>", lambda event: self.buttonOnEnter(button))
+    #     button.bind("<ButtonRelease-1>", lambda event: self.buttonOnEnter(button)) 
+    #     button.bind("<Leave>", lambda event: self.buttonOnLeave(button))
+    #     return button  
 
-    def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
-        button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
-    def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
-        button.configure(fg_color=fg_color, text_color=text_color)
+    # def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
+    #     button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
+    # def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
+    #     button.configure(fg_color=fg_color, text_color=text_color)
     
     def clearButtonAction(self):
         if self.matriceFull:
@@ -830,5 +896,5 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = Interface()
+    app = defineVigenereKeyFrame(600,250)
     app.mainloop()
