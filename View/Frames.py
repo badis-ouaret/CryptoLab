@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from abc import ABC, abstractmethod
 
+
 FRAME_WIDTH = 1200
 FRAME_HEIGHT = 700
 
@@ -90,7 +91,7 @@ class Interface(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.geometry(f"{FRAME_WIDTH}x{FRAME_HEIGHT}")
-
+        self.title("CryptoLab")
         self.choixMethode = ctk.StringVar(value="Cesar")
         self.choixOperation = ctk.StringVar(value="Chiffrer")
 
@@ -367,7 +368,7 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
     def clearButtonAction(self):
         for entry in self.entryDict.values():
             entry.delete(0, "end")
-        self.entryDict[ord('A')].focus_set()
+        
 
 
         
@@ -896,5 +897,6 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineVigenereKeyFrame(600,250)
+    app = Interface()
+    #app = defineVigenereKeyFrame(600,250)
     app.mainloop()
