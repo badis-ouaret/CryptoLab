@@ -472,6 +472,11 @@ class defineCesarKeyFrame(keyType1Frame):
     def clearButtonAction(self):
         self.keyEntry.delete(0,"end")
 
+    def getValidateButton(self): 
+        return self.validateButton    
+    def getKeyEntry(self):
+        return self.keyEntry
+
 
 
 class defineVigenereKeyFrame(keyType1Frame):
