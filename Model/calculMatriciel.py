@@ -1,4 +1,4 @@
-from exceptions import *
+from Model.exceptions import *
 import math
 
 

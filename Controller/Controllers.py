@@ -1,5 +1,7 @@
 import View.Frames as fr
 import Model.chiffreur as ch
+import Controller.VigenereKeyFrameController as vigFr
+import Controller.CesarKeyFrameController as cesFr
 class MainController():
     
     def __init__(self):
@@ -12,7 +14,7 @@ class MainController():
         self.affine = ch.AffineChiffreur()
         self.hill = ch.HillChiffreur()
         self.transpo = ch.TranspositionChiffreur()
-        self.DES = ch.DESChiffreur()
+        self.DES = ch.DesChiffreur()
         self.keyFrame = None
 
         self.frame.keyDefButton.configure(command=self.keyDefButtonFunction)        
@@ -38,8 +40,7 @@ class MainController():
 
 
     
-    def keyDefButtonFunction(self):
-        print("bonjour")
+    
     def operationButtonFunction(self):
         method = self.frame.getMethodeDeChiffrement()
         operation = self.frame.getOperation()
@@ -117,30 +118,42 @@ class MainController():
         except Exception as e:
                 self.frame.messageAlerte(str(e),title="Erreur",buttonText="OK")
 
-
-
-    def clearButtonFunction(self):
+    def keyDefButtonFunction(self):
         method = self.frame.getMethodeDeChiffrement()
-        operation = self.frame.getOperation()
+        if self.keyFrame != None:
+            self.keyFrame.destroy()
         if method == "Cesar":
-            self.cesar.initialiser()
+            self.keyFrame = cesFr.CesarKeyFrameController(self.cesar)
+            self.keyFrame = None
         elif method == "Vigenere":
-            self.vigenere.initialiser()
+            self.keyFrame = vigFr.VigenereKeyFrameController(self.vigenere)
+            self.keyFrame = None
         elif method == "Playfair":
-            self.playfair.initialiser()
+            self.keyFrame = vigFr.PlayfairKeyFrameController(self.playfair)
+            self.keyFrame = None
         elif method == "AmelioCesar":
-            self.amelioCesar.initialiser()
+            self.keyFrame = vigFr.AmelioCesarKeyFrameController(self.amelioCesar)
+            self.keyFrame = None
         elif method == "Polybe":
-            self.polybe.initialiser()
+            self.keyFrame = vigFr.PolybeKeyFrameController(self.polybe)
+            self.keyFrame = None
         elif method == "Hill":
-            self.hill.initialiser()
+            self.keyFrame = vigFr.HillKeyFrameController(self.hill)
+            self.keyFrame = None
         elif method == "Affine":
-            self.affine.initialiser()
+            self.keyFrame = vigFr.AffineKeyFrameController(self.affine)
+            self.keyFrame = None
         elif method == "Transpo":
-            self.transpo.initialiser()
+            self.keyFrame = vigFr.TranspoKeyFrameController(self.transpo)
+            self.keyFrame = None
         elif method == "DES":
-            self.DES.initialiser()
+            self.keyFrame = vigFr.DESKeyFrameController(self.DES)
+            self.keyFrame = None
+            
 
+
+
+   
          
 
 
@@ -148,16 +161,12 @@ class MainController():
             self.frame.textEntry.delete("0.0", "end")
             self.frame.resultEntry.delete("0.0", "end")
             self.frame.textEntry.focus_set()
-            self.clearButtonFunction()
-
-
-    def miniControllerCesarKeyFrame(self,key=""):
-        #doit permettre de recuperer la cle mise dans l'interface
-        self.keyFrame = fr.keyType1Frame()
-        keyEntry = self.keyFrame.getKeyEntry()
-        keyEntry.insert(0,key)
         
+   
+    
 
+                
+        
 
 
     def go(self):
