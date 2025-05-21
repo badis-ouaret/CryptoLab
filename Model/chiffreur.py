@@ -350,6 +350,7 @@ class MatriceChiffreur(ABC):
         self.caracteresJumle = ["I","J"]
         self.motCle = "ABCDE"
 
+
     def initialiser(self):
         self.LIGNES = 5
         self.COLONNES = 5
@@ -357,6 +358,8 @@ class MatriceChiffreur(ABC):
         self.cleReady = False
         self.caracteresJumle = ["I","J"]
         self.motCle = "ABCDE"
+        self.definirCle()
+
 
     def setMotCle(self,mot = "ABCDE"): 
         if not isinstance(mot,str):
@@ -394,6 +397,11 @@ class MatriceChiffreur(ABC):
 
         self.caracteresJumle =carac
 
+    def setKeys(self,key,jumle1,jumle2):
+        self.setMotCle(key)
+        self.setCaracteresJumle([jumle1,jumle2])
+        self.definirCle()
+
 
     def trouverCoordonéesLettre(self,cible):
         if self.verifyKey():
@@ -430,6 +438,8 @@ class MatriceChiffreur(ABC):
                 else:                            
                     alphabet +=1
         self.cleReady = True  
+
+    
         
         
      
@@ -439,7 +449,9 @@ class MatriceChiffreur(ABC):
 class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
     def __init__(self):
         super().__init__()         
-        self.caracterAddi = "X"  
+        self.caracterAddi = "X" 
+        self.definirCle()
+ 
 
     def initialiser(self):
         super().initialiser()
@@ -453,6 +465,11 @@ class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
         carac= carac.upper()
         self.caracterAddi = carac
 
+    def getKey(self):
+        if self.cleReady :
+            return  self.motCle,self.caracteresJumle[0],self.caracteresJumle[1]                
+        else:
+            raise KeyNotReadyException()
     
 
     def definirCle(self):            
@@ -463,11 +480,7 @@ class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
     def setKey(self):
          self.definirCle()
     
-    def getKey(self):
-        if self.cleReady :
-            return self.matrice          
-        else:
-            raise KeyNotReadyException()
+    
                               
 
     def verifyKey(self):
@@ -509,7 +522,6 @@ class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
                 for i in range(0,len(message)-1,2):
                     
                     if message[i].isalpha() and message[i+1].isascii and message[i+1].isalpha() and message[i].isascii:
-                        
                         cord1x,cord1y = self.trouverCoordonéesLettre(message[i].upper())
                         cord2x,cord2y = self.trouverCoordonéesLettre(message[i+1].upper())
                         
@@ -571,6 +583,7 @@ class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
 class PoybeChiffreur(Chiffreur,MatriceChiffreur):
     def __init__(self):
         super().__init__()
+        self.definirCle()
     
     
 
@@ -579,12 +592,14 @@ class PoybeChiffreur(Chiffreur,MatriceChiffreur):
     
     def setKey(self):
         super().definirCle()  
-    
+
     def getKey(self):
         if self.cleReady :
-            return self.matrice          
+            return  self.motCle,self.caracteresJumle[0],self.caracteresJumle[1]                
         else:
             raise KeyNotReadyException()
+    
+    
 
 
     def chiffrer(self, message):
