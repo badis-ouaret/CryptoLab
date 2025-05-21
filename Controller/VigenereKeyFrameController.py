@@ -1,16 +1,19 @@
 from View.Frames import defineVigenereKeyFrame as fr
 
+from View.Frames import defineVigenereKeyFrame as fr
+
 class VigenereKeyFrameController:
-    def __init__(self,vigenereChiffreur,key=""):
+    def __init__(self, vigenereChiffreur, key=""):
         self.frame = fr()
         self.vigenere = vigenereChiffreur()
-        self.keyEntry = fr.getKeyEntry()
-        self.ValidateButton =self.frame.getValidateButton()
-        #doit permettre de recuperer la cle mise dans l'interface       
-        self.keyEntry.insert(0,key)
-        self.ValidateButton = self.frame.getValidateButton() 
+        self.keyEntry = self.frame.getKeyEntry()
+        self.ValidateButton = self.frame.getValidateButton()
+        
+        self.keyEntry.insert(0, key)
         self.ValidateButton.configure(command=self.validateButtonAction)
-        self.keyFrame.mainloop()
+        
+        self.frame.mainloop()
+
 
 
        
