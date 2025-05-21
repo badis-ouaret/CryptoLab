@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from abc import ABC, abstractmethod
+from tkinter import messagebox
 
 
 FRAME_WIDTH = 1200
@@ -177,18 +178,18 @@ class Interface(ctk.CTk):
     def getOperation(self):
         return self.choixOperation.get()    
     def getTextEntry(self):
-        return self.textEntry.get()
+        return self.textEntry
     def getResultEntry(self):
-        return self.resultEntry.get()
+        return self.resultEntry
     #==========================================================
     #seters ===================================================
     def messageAlerte(self,message,title="Erreur",buttonText="OK"):
-        self.CTkMessagebox(title=title, message=message, icon=buttonText)
+        messagebox.showwarning(title=title, message=message)
 
     def setResultEntryText(self,text):
         self.resultEntry.configure(state="normal")
-        self.resultEntry.delete(0,'end')         # Efface tout le texte
-        self.resultEntry.insert(0,text)  # Insère le texte à la position 0
+        self.resultEntry.delete("0.0",'end')         # Efface tout le texte
+        self.resultEntry.insert("0.0",text)  # Insère le texte à la position 0
         self.resultEntry.configure(state="disabled")
     #==========================================================
     

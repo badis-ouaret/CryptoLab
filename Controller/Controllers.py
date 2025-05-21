@@ -47,7 +47,7 @@ class MainController():
         try :
             if method == "Cesar":
                 if operation == "Chiffrer" :
-                    text = self.cesar.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+                    text = self.cesar.chiffrer(self.frame.getTextEntry().get("0.0", "end")) 
                     self.frame.setResultEntryText(text)
                 else:
                     text = self.cesar.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
