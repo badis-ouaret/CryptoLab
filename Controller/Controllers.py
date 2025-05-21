@@ -1,7 +1,8 @@
 import View.Frames as fr
 import Model.chiffreur as ch
-import Controller.VigenereKeyFrameController as vigFr
-import Controller.CesarKeyFrameController as cesFr
+import Controller.VigenereKeyFrameController as vigFrCont
+import Controller.CesarKeyFrameController as cesFrCont
+import Controller.PolybePlayfairKeyFrameController as polPlayFrCont
 class MainController():
     
     def __init__(self):
@@ -42,9 +43,82 @@ class MainController():
     
     
     def operationButtonFunction(self):
-        method = self.frame.getMethodeDeChiffrement()
-        operation = self.frame.getOperation()
-        try :
+            method = self.frame.getMethodeDeChiffrement()
+            operation = self.frame.getOperation()
+        # try :
+        #     if method == "Cesar":
+        #         if operation == "Chiffrer" :
+        #             text = self.cesar.chiffrer(self.frame.getTextEntry().get("0.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.cesar.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+
+        #     elif method == "Vigenere":
+        #         if operation == "Chiffrer" :
+        #             text = self.vigenere.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.vigenere.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+                
+        #     elif method == "Playfair":
+        #         if operation == "Chiffrer" :
+        #             text = self.playfair.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.playfair.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+                
+        #     elif method == "AmelioCesar":
+        #         if operation == "Chiffrer" :
+        #             text = self.amelioCesar.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.amelioCesar.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+                
+        #     elif method == "Polybe":
+                
+        #         if operation == "Chiffrer" :
+        #             text = self.polybe.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text) 
+        #         else:
+        #             text = self.polybe.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)               
+
+        #     elif method == "Hill":
+        #         if operation == "Chiffrer" :
+        #             text = self.hill.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.hill.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #     elif method == "Affine":
+        #         if operation == "Chiffrer" :
+        #             text = self.affine.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.affine.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #     elif method == "Transpo":
+        #         if operation == "Chiffrer" :
+        #             text = self.transpo.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.transpo.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #     elif method == "DES":
+                
+        #         if operation == "Chiffrer" :
+        #             text = self.DES.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        #         else:
+        #             text = self.DES.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+        #             self.frame.setResultEntryText(text)
+        # except Exception as e:
+        #         self.frame.messageAlerte(str(e),title="Erreur",buttonText="OK")#c'est juste pour deboguer à ne pas oublier de remettre comme avant
+
             if method == "Cesar":
                 if operation == "Chiffrer" :
                     text = self.cesar.chiffrer(self.frame.getTextEntry().get("0.0", "end")) 
@@ -81,7 +155,7 @@ class MainController():
                 
                 if operation == "Chiffrer" :
                     text = self.polybe.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
-                    self.frame.setResultEntryText(text)
+                    self.frame.setResultEntryText(text) 
                 else:
                     text = self.polybe.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
                     self.frame.setResultEntryText(text)               
@@ -115,39 +189,37 @@ class MainController():
                 else:
                     text = self.DES.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
                     self.frame.setResultEntryText(text)
-        except Exception as e:
-                self.frame.messageAlerte(str(e),title="Erreur",buttonText="OK")
 
     def keyDefButtonFunction(self):
         method = self.frame.getMethodeDeChiffrement()
         if self.keyFrame != None:
-            self.keyFrame.destroy()
+            self.keyFrame.destroyFrame()
         if method == "Cesar":
-            self.keyFrame = cesFr.CesarKeyFrameController(self.cesar)
+            self.keyFrame = cesFrCont.CesarKeyFrameController(self.cesar,str(self.cesar.getKey()))
             self.keyFrame = None
         elif method == "Vigenere":
-            self.keyFrame = vigFr.VigenereKeyFrameController(self.vigenere)
+            self.keyFrame = vigFrCont.VigenereKeyFrameController(self.vigenere,self.vigenere.getKey())
             self.keyFrame = None
         elif method == "Playfair":
-            self.keyFrame = vigFr.PlayfairKeyFrameController(self.playfair)
+            self.keyFrame = polPlayFrCont.PolybePlayfairKeyFrameController(self.playfair,self.playfair.getKey())
             self.keyFrame = None
         elif method == "AmelioCesar":
-            self.keyFrame = vigFr.AmelioCesarKeyFrameController(self.amelioCesar)
+            self.keyFrame = vigFrCont.AmelioCesarKeyFrameController(self.amelioCesar)
             self.keyFrame = None
         elif method == "Polybe":
-            self.keyFrame = vigFr.PolybeKeyFrameController(self.polybe)
+            self.keyFrame = polPlayFrCont.PolybePlayfairKeyFrameController(self.polybe,self.polybe.getKey())
             self.keyFrame = None
         elif method == "Hill":
-            self.keyFrame = vigFr.HillKeyFrameController(self.hill)
+            self.keyFrame = vigFrCont.HillKeyFrameController(self.hill)
             self.keyFrame = None
         elif method == "Affine":
-            self.keyFrame = vigFr.AffineKeyFrameController(self.affine)
+            self.keyFrame = vigFrCont.AffineKeyFrameController(self.affine)
             self.keyFrame = None
         elif method == "Transpo":
-            self.keyFrame = vigFr.TranspoKeyFrameController(self.transpo)
+            self.keyFrame = vigFrCont.TranspoKeyFrameController(self.transpo)
             self.keyFrame = None
         elif method == "DES":
-            self.keyFrame = vigFr.DESKeyFrameController(self.DES)
+            self.keyFrame = vigFrCont.DESKeyFrameController(self.DES)
             self.keyFrame = None
             
 
@@ -159,7 +231,7 @@ class MainController():
 
     def clearButtonAction2(self):
             self.frame.textEntry.delete("0.0", "end")
-            self.frame.resultEntry.delete("0.0", "end")
+            self.frame.setResultEntryText("")
             self.frame.textEntry.focus_set()
         
    

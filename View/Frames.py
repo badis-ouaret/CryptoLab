@@ -453,6 +453,7 @@ class keyType1Frame(ctk.CTk):#cesar,vigenere,polybe,playfair,DES
 class defineCesarKeyFrame(keyType1Frame):
     def __init__(self, width=600, height=250):
         super().__init__(width, height)
+        self.title("Cesar Key Frame")
         vcmd = (self.register(self.gestionKeyEntryCesar),'%P')
         self.keyEntry.configure(validatecommand=vcmd)
         self.bottom_frame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
@@ -483,6 +484,7 @@ class defineCesarKeyFrame(keyType1Frame):
 class defineVigenereKeyFrame(keyType1Frame):
     def __init__(self, width=600, height=250):
         super().__init__(width, height)
+        self.title("Vigenere Key Frame")
         vcmd = (self.register(self.gestionKeyEntryVigenere),'%P')
         self.keyEntry.configure(validatecommand=vcmd)
         self.bottom_frame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
@@ -492,10 +494,12 @@ class defineVigenereKeyFrame(keyType1Frame):
         self.clearButton = self.createButton(self.bottom_frame,text="Effacer",command=self.clearButtonAction,ligne=0,colonne=4,pady=(0,5))
         self.validateButton= self.createButton(self.bottom_frame,text="Valider",ligne=2,colonne=4,pady=(5,40))
         self.clearButton.grid_configure(columnspan=3,rowspan=1)
-        self.validateButton.grid_configure(columnspan=3,rowspan=1)
-        
-                
+        self.validateButton.grid_configure(columnspan=3,rowspan=1)    
 
+    def getValidateButton(self): 
+        return self.validateButton    
+    def getKeyEntry(self):
+        return self.keyEntry 
 
     def gestionKeyEntryVigenere(self,apres):
         return apres.isascii() and apres.isalpha() or apres == ""
@@ -507,8 +511,9 @@ class defineVigenereKeyFrame(keyType1Frame):
 
 
 class definePolybePlayfairKeyFrame(keyType1Frame):
-    def __init__(self,width = 800,height = 600):
+    def __init__(self,width = 800,height = 600,title = "Polybe/Playfair Key Frame"):
         super().__init__(width,height)
+        self.title(title)
         #self.keyEntry.configure(state="disabled")
         self.lettresJumleesFrame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
         self.lettresJumleesFrame.pack(side="top",fill ="x")
@@ -558,13 +563,15 @@ class definePolybePlayfairKeyFrame(keyType1Frame):
                 col = 3
 
         self.clearButton = self.createButton(self.matrice,text="Effacer",command=self.clearButtonAction,ligne=5,colonne=4,pady=(50,0))
-        self.fillButton = self.createButton(self.matrice, text="Fill",command=self.fillButtonAction,ligne=7,colonne=4,pady=10)
+        self.fillButton = self.createButton(self.matrice, text="Aperçu",command=self.fillButtonAction,ligne=7,colonne=4,pady=10)
         self.validateButton= self.createButton(self.matrice,text="Valider",ligne=9,colonne=4,pady=(0,50))
         self.validateButton.grid_configure(columnspan=3,rowspan=2)
         self.fillButton.grid_configure(columnspan=3,rowspan=2)
         self.clearButton.grid_configure(columnspan=3,rowspan=2)
 
         self.matriceFull = False
+
+    
         
 
     
@@ -720,6 +727,11 @@ class definePolybePlayfairKeyFrame(keyType1Frame):
                             indEntry += 1
                         
             self.matriceFull = True
+
+    def getValidateButton(self): 
+        return self.validateButton    
+    def getKeyEntry(self):
+        return self.keyEntry, self.lettresJumleesEntry1, self.lettresJumleesEntry2
 
 class defineAffineKeyFrame(ctk.CTk):
     def __init__(self):
@@ -903,6 +915,6 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = Interface()
+    app = definePolybePlayfairKeyFrame()
     #app = defineVigenereKeyFrame(600,250)
     app.mainloop()

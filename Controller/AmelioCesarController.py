@@ -1,10 +1,8 @@
-
-
-from View.Frames import defineVigenereKeyFrame as fr
+from View.Frames import defineAmelioCesarKeyFrame as fr
 from Controller.AbstractKeyFrameController import AbstractKeyFrameController
 from tkinter import messagebox
 
-class VigenereKeyFrameController(AbstractKeyFrameController):
+class AmelioCesarController(AbstractKeyFrameController):
     def create_frame(self):
         return fr()
 
@@ -25,8 +23,3 @@ class VigenereKeyFrameController(AbstractKeyFrameController):
                 self.destroyFrame()
             except Exception as e:
                 messagebox.showwarning(title="Avertissement", message=str(e))
-
-
-
-
-
