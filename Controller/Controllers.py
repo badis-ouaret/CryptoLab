@@ -3,6 +3,7 @@ import Model.chiffreur as ch
 import Controller.VigenereKeyFrameController as vigFrCont
 import Controller.CesarKeyFrameController as cesFrCont
 import Controller.PolybePlayfairKeyFrameController as polPlayFrCont
+import Controller.DESKeyFrameController as DesFrCont
 class MainController():
     
     def __init__(self):
@@ -174,21 +175,28 @@ class MainController():
                 else:
                     text = self.affine.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
                     self.frame.setResultEntryText(text)
-            elif method == "Transpo":
-                if operation == "Chiffrer" :
-                    text = self.transpo.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
-                    self.frame.setResultEntryText(text)
-                else:
-                    text = self.transpo.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
-                    self.frame.setResultEntryText(text)
+            # elif method == "Transpo":
+            #     if operation == "Chiffrer" :
+            #         text = self.transpo.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+            #         self.frame.setResultEntryText(text)
+            #     else:
+            #         text = self.transpo.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
+            #         self.frame.setResultEntryText(text)
             elif method == "DES":
-                
-                if operation == "Chiffrer" :
-                    text = self.DES.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
-                    self.frame.setResultEntryText(text)
+                textF =""
+                if operation == "Chiffrer" :                    
+                    text = self.messageFormatDesChiffrement(self.frame.getTextEntry().get("1.0", "end"))#retourne une liste de chaines de len bin 64bits
+                    for m in text:
+                        textF += self.DES.chiffrer(m) 
+                    self.frame.setResultEntryText(textF)
                 else:
-                    text = self.DES.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
-                    self.frame.setResultEntryText(text)
+                    text = self.messageFormatDesDechiffrement(self.frame.getTextEntry().get("1.0", "end"))
+                    i = 0
+                    for m in text:
+                        if len(m)==64:                                             
+                            decrypted_message = self.DES.dechiffrer(m)
+                            textF += "".join(chr(int(decrypted_message[i:i+8], 2)) for i in range(0, len(decrypted_message), 8)) 
+                    self.frame.setResultEntryText(textF)
 
     def keyDefButtonFunction(self):
         method = self.frame.getMethodeDeChiffrement()
@@ -215,11 +223,11 @@ class MainController():
         elif method == "Affine":
             self.keyFrame = vigFrCont.AffineKeyFrameController(self.affine)
             self.keyFrame = None
-        elif method == "Transpo":
-            self.keyFrame = vigFrCont.TranspoKeyFrameController(self.transpo)
-            self.keyFrame = None
+        # elif method == "Transpo":
+        #     self.keyFrame = vigFrCont.TranspoKeyFrameController(self.transpo)
+        #     self.keyFrame = None
         elif method == "DES":
-            self.keyFrame = vigFrCont.DESKeyFrameController(self.DES)
+            self.keyFrame = DesFrCont.DESKeyFrameController(self.DES,self.DES.getKey())
             self.keyFrame = None
             
 
@@ -233,7 +241,30 @@ class MainController():
             self.frame.textEntry.delete("0.0", "end")
             self.frame.setResultEntryText("")
             self.frame.textEntry.focus_set()
+
+
+    def messageFormatDesChiffrement(self,message):
+        while len(message)%8 !=0:
+            message +=' ' 
+        messageTab=[]
+        messageBinTab = []
+        i=0
+        while i < len(message):
+            messageTab.append(message[i:i+8])
+            i +=8
+        for m in messageTab:      
+            messageBin = "".join(bin(ord(caractere))[2:].zfill(8) for caractere in m)
+            messageBinTab.append(messageBin)
+        return messageBinTab
+    
+    def messageFormatDesDechiffrement(self, message):
+        return [message[i:i+64] for i in range(0, len(message), 64)]
+
+
+
         
+
+
    
     
 
