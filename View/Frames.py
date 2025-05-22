@@ -112,7 +112,7 @@ class Interface(ctk.CTk):
             ("Playfair", "Playfair"),
             ("Hill", "Hill"),
             ("Affine", "Affine"),
-            ("Transposition", "Transpo"),
+            #("Transposition", "Transpo"),
             ("Chiffrement DES", "DES")
         ]
         
@@ -212,8 +212,8 @@ class Interface(ctk.CTk):
             self.title.configure(text = "Chiffrement de Hill")
         elif method == "Affine":
             self.title.configure(text = "Chiffrement Affine")
-        elif method == "Transpo":
-            self.title.configure(text = "Chiffrement par Transposition")
+        # elif method == "Transpo":
+        #     self.title.configure(text = "Chiffrement par Transposition")
         elif method == "DES":
             self.title.configure(text = "Chiffrement DES")
 
@@ -276,8 +276,8 @@ class Interface(ctk.CTk):
 
         textLabel,resultLabel,textEntry,resultEntry = self.createTextsEntrys(pannel)    
 
-        operationButton = self.createButton(pannel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
-        clearButton = self.createButton(pannel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
+        operationButton = self.createButton(pannel, text="Chiffrer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 5,colonne = 2,padx=(0, 10),pady=(20,10))
+        clearButton = self.createButton(pannel, text="Effacer", font=RIGHT_PANEL_FONT, text_color="white",fg_color="black",height=40,hover_color="gray",ligne = 4,colonne = 2,padx=(0, 10),pady=(20,10))
         
         
         return operationButton,clearButton,textEntry,resultEntry,textLabel,resultLabel,titre
@@ -506,7 +506,33 @@ class defineVigenereKeyFrame(keyType1Frame):
     
     def clearButtonAction(self):
         self.keyEntry.delete(0,"end")
-        
+
+
+class defineDESeKeyFrame(keyType1Frame):
+    def __init__(self, width=1200, height=250):
+        super().__init__(width, height)
+        self.title("DES Key Frame")
+        vcmd = (self.register(self.gestionKeyEntryDES),'%P')
+        self.keyEntry.configure(validatecommand=vcmd)
+        self.bottom_frame = ctk.CTkFrame(self.main_frame, fg_color=RIGHT_PANEL_BG_COLOR)
+        self.bottom_frame.pack(side="bottom",fill ="x")
+        self.configureGrid(self.bottom_frame,lineWay=True,nbrLine=4,nbrCol=11,lineVal=1,colVal = 1)
+
+        self.clearButton = self.createButton(self.bottom_frame,text="Effacer",command=self.clearButtonAction,ligne=0,colonne=4,pady=(0,5))
+        self.validateButton= self.createButton(self.bottom_frame,text="Valider",ligne=2,colonne=4,pady=(5,40))
+        self.clearButton.grid_configure(columnspan=3,rowspan=1)
+        self.validateButton.grid_configure(columnspan=3,rowspan=1)    
+
+    def getValidateButton(self): 
+        return self.validateButton    
+    def getKeyEntry(self):
+        return self.keyEntry 
+
+    def gestionKeyEntryDES(self,apres):
+        return set(apres).issubset({'0', '1',''}) and len(apres) <= 64
+    
+    def clearButtonAction(self):
+        self.keyEntry.delete(0,"end")
     
 
 
@@ -915,6 +941,6 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = definePolybePlayfairKeyFrame()
+    app = defineDESeKeyFrame(width=1200,height=250)
     #app = defineVigenereKeyFrame(600,250)
     app.mainloop()
