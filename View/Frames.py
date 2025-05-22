@@ -806,6 +806,11 @@ class defineAffineKeyFrame(ctk.CTk):
                 pannel.grid_rowconfigure(i, weight=lineVal)
             for i in range(nbrCol):
                 pannel.grid_columnconfigure(i, weight=colVal)
+    
+    def getKeyEntry(self):
+        return self.keyEntry,self.decalageEntry
+    def getValidateButton(self):
+        return self.submitButton
 
 
     def createButton(self,panel, text="Bouton", font=BUTTON_FONT, text_color=BUTTON_TEXT_COLOR,fg_color=BUTTON_BG_COLOR,height=BUTTON_HEIGHT,hover_color=None,command=lambda: None,ligne = 4,colonne = 2,padx=(0, 10),pady=(100,0)):
@@ -941,6 +946,6 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineDESeKeyFrame(width=1200,height=250)
+    app = defineAffineKeyFrame()
     #app = defineVigenereKeyFrame(600,250)
     app.mainloop()
