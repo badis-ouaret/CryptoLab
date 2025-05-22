@@ -3,6 +3,7 @@ import Model.chiffreur as ch
 import Controller.VigenereKeyFrameController as vigFrCont
 import Controller.CesarKeyFrameController as cesFrCont
 import Controller.PolybePlayfairKeyFrameController as polPlayFrCont
+import Controller.AffineKeyFrameController as affinCont
 import Controller.DESKeyFrameController as DesFrCont
 class MainController():
     
@@ -221,7 +222,7 @@ class MainController():
             self.keyFrame = vigFrCont.HillKeyFrameController(self.hill)
             self.keyFrame = None
         elif method == "Affine":
-            self.keyFrame = vigFrCont.AffineKeyFrameController(self.affine)
+            self.keyFrame = affinCont.AffineKeyFrameController(self.affine,self.affine.getKey())
             self.keyFrame = None
         # elif method == "Transpo":
         #     self.keyFrame = vigFrCont.TranspoKeyFrameController(self.transpo)
