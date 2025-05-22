@@ -323,6 +323,7 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
         super().__init__()
         self.geometry("800x600")
         self.resizable(False, False)
+        self.title("César Amélioré Key Frame")
         self.main_frame = ctk.CTkFrame(self,corner_radius=0,fg_color=RIGHT_PANEL_BG_COLOR)
         self.main_frame.pack(fill="both", expand=True)
         self.configureGrid(self.main_frame,lineWay=True,nbrLine=6,nbrCol=10,lineVal=1,colVal=1)
@@ -369,13 +370,12 @@ class defineAmelioCesarKeyFrame(ctk.CTk):
     def clearButtonAction(self):
         for entry in self.entryDict.values():
             entry.delete(0, "end")
-        
 
-
-        
-    
-
-    
+    def getKeyEntry(self):
+        return self.entryDict
+    def getValidateButton(self):
+        return self.submitButton
+           
     def configureGrid(self,pannel,dictR = {},dictC={0: 0, 1: 1, 2: 1, 3: 1},nbrLine=0,nbrCol = 0,lineWay = False,lineVal = 0,colVal = 0):
         if not lineWay :
             for line,weight in dictR.items():
@@ -831,6 +831,7 @@ class defineHillKeyFrame(ctk.CTk):
         super().__init__()
         self.geometry("800x600")
         self.resizable(False, False)  
+        self.title("Hill Key Frame")
         self.main_frame = ctk.CTkFrame(self,fg_color=RIGHT_PANEL_BG_COLOR)
         self.main_frame.pack(fill="both", expand=True)
         self.sizeMat = 3
@@ -868,17 +869,21 @@ class defineHillKeyFrame(ctk.CTk):
 
     def gestionDesEntry(self,apres):        
         if apres.isdigit() and len(apres)<=1 or apres=="":
+            
             if apres=="":
                 self.sizeMat = 0
-            else:
+                self.creerMatrice()
+            elif int(apres)>=2:                
                 self.sizeMat = int(apres)
                 self.creerMatrice()
+            elif int(apres) <=1:
+                return False
             return True
         else:
             return False
     
     def gestionDesMatEntry(self,apres):        
-        return apres.isdigit() and len(apres)<=2 or apres==""
+        return apres.isdigit() or apres==""
         
     def creerMatrice(self):
 
@@ -928,7 +933,13 @@ class defineHillKeyFrame(ctk.CTk):
     def buttonOnEnter(self,button,fg_color=BUTTON_BG_COLOR_HOVER, text_color=BUTTON_TEXT_COLOR_HOVER, border_color=BUTTON_BORDER_COLOR_HOVER,border_width=BUTTON_BORDER_WIDTH_HOVER,event=None):
         button.configure(fg_color=fg_color, text_color=text_color, border_color=border_color,border_width=border_width)
     def buttonOnLeave(self,button,fg_color=BUTTON_BG_COLOR, text_color=BUTTON_TEXT_COLOR,event=None):        
-        button.configure(fg_color=fg_color, text_color=text_color)    
+        button.configure(fg_color=fg_color, text_color=text_color)   
+
+    def getKeyEntry(self):
+        return self.entryList,self.keyEntry
+
+    def getValidateButton(self):
+        return self.submitButton 
     
             
 
@@ -946,6 +957,6 @@ class defineHillKeyFrame(ctk.CTk):
 
     
 if __name__ == "__main__":
-    app = defineAffineKeyFrame()
+    app = defineHillKeyFrame()
     #app = defineVigenereKeyFrame(600,250)
     app.mainloop()

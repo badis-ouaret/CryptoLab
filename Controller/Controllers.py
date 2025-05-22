@@ -5,6 +5,8 @@ import Controller.CesarKeyFrameController as cesFrCont
 import Controller.PolybePlayfairKeyFrameController as polPlayFrCont
 import Controller.AffineKeyFrameController as affinCont
 import Controller.DESKeyFrameController as DesFrCont
+import Controller.HillKeyFrameController as HillFrCont
+import Controller.AmelioCesarKeyFrame as AmelioCesarFrCont
 class MainController():
     
     def __init__(self):
@@ -213,13 +215,13 @@ class MainController():
             self.keyFrame = polPlayFrCont.PolybePlayfairKeyFrameController(self.playfair,self.playfair.getKey())
             self.keyFrame = None
         elif method == "AmelioCesar":
-            self.keyFrame = vigFrCont.AmelioCesarKeyFrameController(self.amelioCesar)
+            self.keyFrame = AmelioCesarFrCont.AmelioCesarKeyFrameController(self.amelioCesar,self.amelioCesar.getKey())
             self.keyFrame = None
         elif method == "Polybe":
             self.keyFrame = polPlayFrCont.PolybePlayfairKeyFrameController(self.polybe,self.polybe.getKey())
             self.keyFrame = None
         elif method == "Hill":
-            self.keyFrame = vigFrCont.HillKeyFrameController(self.hill)
+            self.keyFrame = HillFrCont.HillKeyFrameController(self.hill,self.hill.getKey())
             self.keyFrame = None
         elif method == "Affine":
             self.keyFrame = affinCont.AffineKeyFrameController(self.affine,self.affine.getKey())
