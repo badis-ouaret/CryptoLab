@@ -78,6 +78,9 @@ class MainController():
                         text = self.polybe.chiffrer(self.frame.getTextEntry().get("1.0", "end")) 
                         self.frame.setResultEntryText(text) 
                     else:
+                        text = self.frame.getTextEntry().get("1.0", "end")
+                        if not all(c in "01234" or c.isspace() for c in text) :
+                            raise Exception("Le message à déchiffrer doit être de taille divisible par 2 ne contient que des caractères numeriques entre 0 et 4 ou des éspaces")
                         text = self.polybe.dechiffrer(self.frame.getTextEntry().get("1.0", "end")) 
                         self.frame.setResultEntryText(text)               
 
@@ -106,7 +109,7 @@ class MainController():
                 elif method == "DES":
                     textF =""
                     if operation == "Chiffrer" :                    
-                        text = self.messageFormatDesChiffrement(self.frame.getTextEntry().get("1.0", "end"))#retourne une liste de chaines de len bin 64bits
+                        text = self.messageFormatDesChiffrement(self.frame.getTextEntry().get("1.0", "end"))#retourne une liste de chaines bin de len  64bits
                         for m in text:
                             textF += self.DES.chiffrer(m) 
                         self.frame.setResultEntryText(textF)
@@ -181,6 +184,8 @@ class MainController():
         return messageBinTab
     
     def messageFormatDesDechiffrement(self, message):#transforme les chaines de 64 bits binaires en mots de 8 lettres corespondants.
+        if len(message)%64 != 0 :
+            raise Exception("Le message à dechiffrer doit être entierement en binaire. Et sa taille doit être un multiple de 64")
         return [message[i:i+64] for i in range(0, len(message), 64)]
 
 

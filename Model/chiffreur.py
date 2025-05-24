@@ -557,8 +557,8 @@ class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
 
     def dechiffrer(self,text):
         if self.verifyKey():
-            
-            
+            text = text.replace(self.caracteresJumle[1], self.caracteresJumle[0]).replace(self.caracteresJumle[1].lower(), self.caracteresJumle[0].lower()) 
+            print(text)           
             mots = self.textToStringsArray(text)
             
             textF = ""
@@ -566,8 +566,7 @@ class PlayfairChiffreur(Chiffreur,MatriceChiffreur):
                 
                 message = messageF
                 chaine=""
-                message = Chiffreur.supprime_accents_nombres(message)
-                             
+                message = Chiffreur.supprime_accents_nombres(message)      
                
                
                 for i in range(0,len(message)-1,2):
@@ -642,15 +641,14 @@ class PoybeChiffreur(Chiffreur,MatriceChiffreur):
     
     def dechiffrer(self, texte):
         if self.verifyKey():
-            strings = self.textToStringsArray2(texte)
             
+            strings = self.textToStringsArray2(texte)                    
             texteF = ""
             for messageF in strings:
                 message = messageF
-                if not message.isnumeric() or len(message)%2 != 0:
-                    raise PolybeWrongTextException()
+                if not message.isnumeric() or len(message)%2 != 0 and not all(c in "01234" for c in message):
+                    raise Exception("Le message à déchiffrer doit être de taille divisible par 2 ne contient que des caractères numeriques entre 0 et 4 ou des éspaces")
                 chaine = "" 
-                    
                 for i in range(0,len(message)-1,2):    
                                     
                     chaine +=self.matrice[int(message[i])][int(message[i+1])]
@@ -929,10 +927,13 @@ class DesChiffreur(Chiffreur):
         super().__init__()
         self.key = "0000000000000000000000000000000000000000000000000000000000000000"
         self.tabKeys = []
+        self.setKey(self.key)
 
     def initialiser(self):
         self.key = "0000000000000000000000000000000000000000000000000000000000000000"
         self.tabKeys = []
+        self.setKey(self.key)
+
         
     def verifyKey(self,cle):
         if isinstance(cle,str) and len(cle) ==64 and cle.isdigit() and cle.isascii():
@@ -947,6 +948,7 @@ class DesChiffreur(Chiffreur):
             
     def setKey(self,cle):
         if self.verifyKey(cle):
+            self.tabKeys = []
             self.key = cle
             cle =self.pC_1(cle)#fonction permuted choice 1
             for i in range(16):
